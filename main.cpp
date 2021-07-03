@@ -57,7 +57,7 @@ void brute_position(Platform* plat, float spd) {
 
 	if (max_x < plat->triangles[1].vector3[0]) { max_x = plat->triangles[1].vector3[0]; }
 
-	for (float x = plat->triangles[1].vector2[0]; x < max_x; x = nextafterf(x, max_x)) {
+	for (float x = plat->triangles[1].vector2[0]; x <= max_x; x = nextafterf(x, max_x+1)) {
 		float y1 = line_point(plat->triangles[1].vector1, plat->triangles[1].vector2, x, true);
 		float z1 = line_point(plat->triangles[1].vector1, plat->triangles[1].vector2, x, false);
 
@@ -67,7 +67,7 @@ void brute_position(Platform* plat, float spd) {
 		float min_z = min(z1, z2);
 		float max_z = max(z1, z2);
 
-		for (float z = min_z; z < max_z; z = nextafterf(z, max_z)) {
+		for (float z = min_z; z <= max_z; z = nextafterf(z, max_z+1)) {
 			float y;
 			
 			if (min_z == z1) {
