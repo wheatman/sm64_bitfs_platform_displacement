@@ -32,7 +32,13 @@
 *.app
 
 # Folders
-Debug\
-Release\
-x64\
-.vs\
+/Debug/
+/x64/
+/Release/
+/.vs/
+
+# Virtual Studio
+*.sln
+*.vcxproj
+*.filters
+*.user
