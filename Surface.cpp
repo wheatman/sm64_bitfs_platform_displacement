@@ -15,37 +15,19 @@ void Surface::rotate(vector<vector<float>> transformation) {
 
 	for (int i = 0; i < 4; i++) {
 		for (int j = 0; j < 4; j++) {
-			rotated1[i] += v1[j] * transformation[j][i];
-
-			if (j == 3) {
-				for (int k = 0; k < 3; k++) {
-					rotated1[k] /= rotated1[3];
-				}
-			}
+			rotated1[i] += v1[i] * transformation[i][j];
 		}
 	}
 
 	for (int i = 0; i < 4; i++) {
 		for (int j = 0; j < 4; j++) {
-			rotated2[i] += v2[j] * transformation[j][i];
-
-			if (j == 3) {
-				for (int k = 0; k < 3; k++) {
-					rotated2[k] /= rotated2[3];
-				}
-			}
+			rotated2[i] += v2[i] * transformation[i][j];
 		}
 	}
 
 	for (int i = 0; i < 4; i++) {
 		for (int j = 0; j < 4; j++) {
-			rotated3[i] += v3[j] * transformation[j][i];
-
-			if (j == 3) {
-				for (int k = 0; k < 3; k++) {
-					rotated3[k] /= rotated3[3];
-				}
-			}
+			rotated3[i] += v3[i] * transformation[i][j];
 		}
 	}
 

@@ -14,6 +14,8 @@ public:
 	vector<float> pos = vector<float>(3, 0);
 	float speed;
 
+	Mario() {}
+
 	Mario(vector<float>position, float spd) {
 		pos = position;
 		speed = spd;

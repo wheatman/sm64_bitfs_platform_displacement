@@ -30,7 +30,13 @@ float approach_by_increment(float goal, float src, float inc) {
  * and the object's position.
  */
 void Platform::create_transform_from_normals() {
-    align_normal(transform, normal, pos);
+	vector<float> position = { 0, 0, 0 };
+
+	position[0] = pos[0];
+	position[1] = pos[1];
+	position[2] = pos[2];
+
+    transform = align_normal(normal, position);
 }
 
 Surface* Platform::find_floor(Mario* m) {
@@ -87,9 +93,9 @@ void Platform::platform_logic(Mario* m) {
 	float dz;
 	float d;
 
-	vector<float> dist;
-	vector<float> posBeforeRotation;
-	vector<float> posAfterRotation;
+	vector<float> dist(3, 0);
+	vector<float> posBeforeRotation(3, 0);
+	vector<float> posAfterRotation(3, 0);
 
 	create_transform_from_normals();
 
@@ -107,7 +113,7 @@ void Platform::platform_logic(Mario* m) {
 	dist[0] = mx - -1945.0;
 	dist[1] = my - -3225.0;
 	dist[2] = mz - -715.0;
-	linear_mtxf_mul_vec3f(transform, posBeforeRotation, dist);
+	posBeforeRotation = linear_mtxf_mul_vec3f(transform, dist);
 
 	dx = mx - -1945.0;
 	dy = 500.0f;
@@ -148,7 +154,7 @@ void Platform::platform_logic(Mario* m) {
 
 	// If Mario is on the platform, adjust his position for the platform tilt.
 	if (floor) {
-		linear_mtxf_mul_vec3f(transform, posAfterRotation, dist);
+		posAfterRotation = linear_mtxf_mul_vec3f(transform, dist);
 		mx += posAfterRotation[0] - posBeforeRotation[0];
 		my += posAfterRotation[1] - posBeforeRotation[1];
 		mz += posAfterRotation[2] - posBeforeRotation[2];

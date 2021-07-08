@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdexcept>
 #include <utility>
 #include "Mario.h"
 #include "Trig.h"
