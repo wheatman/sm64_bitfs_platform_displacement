@@ -1,9 +1,9 @@
 #include "Surface.h"
 
 void Surface::rotate(vector<vector<float>> transformation) {
-	vector<float> v1 = vector1;
-	vector<float> v2 = vector2;
-	vector<float> v3 = vector3;
+	vector<int32_t> v1 = vector1;
+	vector<int32_t> v2 = vector2;
+	vector<int32_t> v3 = vector3;
 
 	v1.push_back(1);
 	v2.push_back(1);
@@ -50,9 +50,9 @@ void Surface::rotate(vector<vector<float>> transformation) {
 	}
 
 	for (int i = 0; i < 3; i++) {
-		vector1[i] = rotated1[i];
-		vector2[i] = rotated2[i];
-		vector3[i] = rotated3[i];
+		vector1[i] = static_cast<int32_t>(rotated1[i]);
+		vector2[i] = static_cast<int32_t>(rotated2[i]);
+		vector3[i] = static_cast<int32_t>(rotated3[i]);
 	}
 }
 
@@ -60,7 +60,7 @@ void Surface::repr() {
 	printf("vector1: (");
 
 	for (int i = 0; i < 3; i++) {
-		printf("%.9f", vector1[i]);
+		printf("%d", vector1[i]);
 
 		if (i != 2) {
 			printf(", ");
@@ -73,7 +73,7 @@ void Surface::repr() {
 	printf("vector2: (");
 
 	for (int i = 0; i < 3; i++) {
-		printf("%.9f", vector2[i]);
+		printf("%d", vector2[i]);
 
 		if (i != 2) {
 			printf(", ");
@@ -86,7 +86,7 @@ void Surface::repr() {
 	printf("vector3: (");
 
 	for (int i = 0; i < 3; i++) {
-		printf("%.9f", vector3[i]);
+		printf("%d", vector3[i]);
 
 		if (i != 2) {
 			printf(", ");

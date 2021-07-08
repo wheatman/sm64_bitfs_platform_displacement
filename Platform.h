@@ -13,7 +13,7 @@ using namespace std;
 class Platform
 {
 public:
-	vector<float> pos = { -1945.0f, -3225.0f, -715.0f };
+	vector<int32_t> pos = { -1945, -3225, -715 };
 	vector<float> normal = { 0, 1, 0 };
 	vector<vector<float>> transform = { {0,0,0,0}, {0,0,0,0}, {0,0,0,0}, {0,0,0,0} };
 	vector<Surface> triangles = { Surface(true), Surface(false) };

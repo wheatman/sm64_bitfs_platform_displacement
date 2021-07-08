@@ -65,7 +65,7 @@ float dist_calc(vector<float> x, vector<float> y) {
 	return sqrtf(powf(y[0] - x[0], 2) + powf(y[1] - x[1], 2) + powf(y[2] - x[2], 2));
 }
 
-float line_point(vector<float> p1, vector<float> p2, float x, bool followY) {
+float line_point(vector<int32_t> p1, vector<int32_t> p2, float x, bool followY) {
 	if (followY) {
 		return (p2[1] - p1[1]) / (p2[0] - p1[0]) * (x - p1[0]) - p1[1];
 	}

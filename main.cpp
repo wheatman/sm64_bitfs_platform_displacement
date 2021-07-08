@@ -38,36 +38,26 @@ void brute_angles(Mario* m, Platform* plat) {
 }
 
 void brute_position(Platform* plat, float spd) {
-	//pseudo code
-	//iterate over z away from the moving platform, up to the maximum displacement push by the moving platform hitbox (negative z direction)
-	//	iterate over x along the triangle for each z position
-	//		check if y position is above the lava and below the top of the moving platform hitbox
-	//			construct Mario object
-	//			continue to brute_angles
-	//		else
-	//			continue
-
 	vector<Surface> tri = plat->triangles;
 
 	plat->create_transform_from_normals();
 	plat->triangles[0].rotate(plat->transform);
 	plat->triangles[1].rotate(plat->transform);
 
-	float max_x = plat->triangles[1].vector1[0];
+	float max_x = max(plat->triangles[1].vector1[0], plat->triangles[1].vector3[0]);
+	float min_x = min(plat->triangles[1].vector1[0], plat->triangles[1].vector3[0]);
 
-	if (max_x < plat->triangles[1].vector3[0]) { max_x = plat->triangles[1].vector3[0]; }
+	for (float x = plat->triangles[1].vector2[0]; x < min_x; x = nextafterf(x, min_x)) {
+		float y1 = line_point(plat->triangles[1].vector2, plat->triangles[1].vector1, x, true);
+		float z1 = line_point(plat->triangles[1].vector2, plat->triangles[1].vector1, x, false);
 
-	for (float x = plat->triangles[1].vector2[0]; x <= max_x; x = nextafterf(x, max_x+1)) {
-		float y1 = line_point(plat->triangles[1].vector1, plat->triangles[1].vector2, x, true);
-		float z1 = line_point(plat->triangles[1].vector1, plat->triangles[1].vector2, x, false);
-
-		float y2 = line_point(plat->triangles[1].vector1, plat->triangles[1].vector3, x, true);
-		float z2 = line_point(plat->triangles[1].vector1, plat->triangles[1].vector3, x, false);
+		float y2 = line_point(plat->triangles[1].vector2, plat->triangles[1].vector3, x, true);
+		float z2 = line_point(plat->triangles[1].vector2, plat->triangles[1].vector3, x, false);
 
 		float min_z = min(z1, z2);
 		float max_z = max(z1, z2);
 
-		for (float z = min_z; z <= max_z; z = nextafterf(z, max_z+1)) {
+		for (float z = min_z; z <= max_z; z = nextafterf(z, max_z + 1)) {
 			float y;
 			
 			if (min_z == z1) {
@@ -77,7 +67,48 @@ void brute_position(Platform* plat, float spd) {
 				y = (y1 - y2) / (z1 - z2) * (z - z2) - y2;
 			}
 
+			if (y <= -3071) { continue; }
+
 			Mario m({x, y, z}, spd);
+			brute_angles(&m, plat);
+		}
+	}
+
+	vector<int32_t> max_vector;
+	vector<int32_t> min_vector;
+
+	if (min_x == plat->triangles[1].vector1[0]) {
+		min_vector = plat->triangles[1].vector3;
+		max_vector = plat->triangles[1].vector1;
+	}
+	else {
+		min_vector = plat->triangles[1].vector3;
+		max_vector = plat->triangles[1].vector1;
+	}
+
+	for (float x = min_x; x <= max_x; x = nextafterf(x, max_x + 1)) {
+		float y1 = line_point(plat->triangles[1].vector2, max_vector, x, true);
+		float z1 = line_point(plat->triangles[1].vector2, max_vector, x, false);
+
+		float y2 = line_point(min_vector, max_vector, x, true);
+		float z2 = line_point(min_vector, max_vector, x, false);
+
+		float min_z = min(z1, z2);
+		float max_z = max(z1, z2);
+
+		for (float z = min_z; z <= max_z; z = nextafterf(z, max_z + 1)) {
+			float y;
+
+			if (min_z == z1) {
+				y = (y2 - y1) / (z2 - z1) * (z - z1) - y1;
+			}
+			else {
+				y = (y1 - y2) / (z1 - z2) * (z - z2) - y2;
+			}
+
+			if (y <= -3071) { continue; }
+
+			Mario m({ x, y, z }, spd);
 			brute_angles(&m, plat);
 		}
 	}

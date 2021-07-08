@@ -39,10 +39,10 @@ Surface* Platform::find_floor(Mario* m) {
 	for (int i = 0; i < triangles.size(); i++) {
 		Surface surf = triangles[0];
 
-		float x1 = surf.vector1[0];
-		float z1 = surf.vector1[2];
-		float x2 = surf.vector2[0];
-		float z2 = surf.vector2[2];
+		int32_t x1 = surf.vector1[0];
+		int32_t z1 = surf.vector1[2];
+		int32_t x2 = surf.vector2[0];
+		int32_t z2 = surf.vector2[2];
 
 		// Check that the point is within the triangle bounds.
 		if ((z1 - m->pos[2]) * (x2 - x1) - (x1 - m->pos[0]) * (z2 - z1) < 0) {
@@ -50,8 +50,8 @@ Surface* Platform::find_floor(Mario* m) {
 		}
 
 		// To slightly save on computation time, set this later.
-		float x3 = surf.vector3[0];
-		float z3 = surf.vector3[2];
+		int32_t x3 = surf.vector3[0];
+		int32_t z3 = surf.vector3[2];
 
 		if ((z2 - m->pos[2]) * (x3 - x2) - (x2 - m->pos[0]) * (z3 - z2) < 0) {
 			continue;

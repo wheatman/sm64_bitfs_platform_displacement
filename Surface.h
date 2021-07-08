@@ -13,9 +13,9 @@ using namespace std;
 class Surface
 {
 public:
-	vector<float> vector1;
-	vector<float> vector2;
-	vector<float> vector3;
+	vector<int32_t> vector1;
+	vector<int32_t> vector2;
+	vector<int32_t> vector3;
 	bool top;
 
 	Surface(bool top) {
