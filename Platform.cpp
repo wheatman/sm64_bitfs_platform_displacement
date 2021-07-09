@@ -104,8 +104,6 @@ void Platform::platform_logic(Mario* m) {
 	float my;
 	float mz;
 
-	int32_t marioOnPlatform = false;
-
 	mx = m->pos[0];
 	my = m->pos[1];
 	mz = m->pos[2];

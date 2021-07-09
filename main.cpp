@@ -173,8 +173,8 @@ void brute_position(Mario* m, Platform* plat, float spd, vector<float> normals) 
 void brute_normals(float spd, Mario* m, Platform* p) {
 	vector<float> normals;
 
-	for (float nx = 0.0f; nx <= 1.0f; nx = nextafterf(nx, 2.0f)) {
-		for (float nz = 0.0f; nz <= 1.0f - nx; nz = nextafterf(nz, 2.0f)) {
+	for (float nx = -1.0f; nx <= 1.0f; nx = nextafterf(nx, 2.0f)) {
+		for (float nz = 0.0f; nz >= powf(nx, 2) - 1.0f; nz = nextafterf(nz, -2.0f)) {
 			float ny = sqrtf(1 - powf(nx, 2) - powf(nz, 2));
 
 			normals = { nx, ny, nz };
