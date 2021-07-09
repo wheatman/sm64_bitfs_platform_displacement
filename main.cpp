@@ -2,12 +2,6 @@
 #include "Magic.h"
 #include "Platform.h"
 
-//the z position of the rising/lowering platform wall that pushes Mario on the tilting platform
-#define RISING_PLATFORM_Z 0
-
-//the highest y position of the rising/lowering platform wall
-#define RISING_PLATFORM_Y 0
-
 using namespace std;
 
 void brute_angles(Mario* m, Platform* plat, vector<float> m_pos, float spd, vector<float> normals) {
@@ -67,30 +61,7 @@ void brute_angles(Mario* m, Platform* plat, vector<float> m_pos, float spd, vect
 	}*/
 }
 
-//NOTE: I broke this because I want to optimize it. Does not currently function.
 void brute_position(Mario* m, Platform* plat, float spd, vector<float> normals) {
-	/*
-	* vector1 is the leftmost vertex, vector2 is the hypotenuse vertex, and vector3 is the vertex closest to the rising/lowering platform
-	* 
-	* Pseudo-code:
-	* if max(plat->triangles[1].vector1[2], plat->triangles[1].vector3[2]) < RISING_PLATFORM_Z - 50:
-	*	ignore triangle
-	* else:
-	*	Create two line segments along the x-axis at z values RISING_PLATFORM_Z - 50 and RISING_PLATFORM_Z - 24
-	*	Iterate along z-axis:
-	*		Calculate y value for RISING_PLATFORM_Z - 50
-	*		If y <= -3701 || y > RISING_PLATFORM_Y - 60:
-	*			ignore position
-	*		else:
-	*			brute_angles()
-	*	Iterate along z-axis:
-	*		Calculate y value for RISING_PLATFORM_Z - 24
-	*		If y <= -3701 || y > RISING_PLATFORM_Y - 30:
-	*			ignore position
-	*		else:
-	*			brute_angles()
-	*/
-
 	plat->normal = normals;
 
 	plat->create_transform_from_normals();
@@ -103,131 +74,98 @@ void brute_position(Mario* m, Platform* plat, float spd, vector<float> normals) 
 	float max_x = max(plat->triangles[1].vector1[0], plat->triangles[1].vector3[0]);
 	float min_x = min(plat->triangles[1].vector1[0], plat->triangles[1].vector3[0]);
 
-	if (plat->triangles[1].vector3[2] < RISING_PLATFORM_Z - 50) {
-		for (float x = plat->triangles[1].vector2[0]; x < min_x; x++) {
-			float y1 = line_point(plat->triangles[1].vector2, plat->triangles[1].vector1, x, true);
-			float z1 = line_point(plat->triangles[1].vector2, plat->triangles[1].vector1, x, false);
+	for (float x = plat->triangles[1].vector2[0]; x < min_x; x++) {
+		float y1 = line_point(plat->triangles[1].vector2, plat->triangles[1].vector1, x, true);
+		float z1 = line_point(plat->triangles[1].vector2, plat->triangles[1].vector1, x, false);
 
-			float y2 = line_point(plat->triangles[1].vector2, plat->triangles[1].vector3, x, true);
-			float z2 = line_point(plat->triangles[1].vector2, plat->triangles[1].vector3, x, false);
+		float y2 = line_point(plat->triangles[1].vector2, plat->triangles[1].vector3, x, true);
+		float z2 = line_point(plat->triangles[1].vector2, plat->triangles[1].vector3, x, false);
 
-			float min_z = min(z1, z2);
-			float max_z = max(z1, z2);
+		float min_z = min(z1, z2);
+		float max_z = max(z1, z2);
 
-			if (min_z <= RISING_PLATFORM_Z - 50 && max_z >= RISING_PLATFORM_Z - 50) {
-				float y;
+		for (float z = min_z; z <= max_z; z++) {
+			float y;
 
-				if (min_z == z1) {
-					if (z2 - z1 == 0) {
-						y = -y1;
-					}
-					else {
-						y = (y2 - y1) / (z2 - z1) * (RISING_PLATFORM_Z - 50 - z1) - y1;
-					}
+			if (min_z == z1) {
+				if (z2 - z1 == 0) {
+					y = -y1;
 				}
 				else {
-					if (z1 - z2 == 0) {
-						y = -y2;
-					}
-					else {
-						y = (y1 - y2) / (z1 - z2) * (RISING_PLATFORM_Z - 50 - z2) - y2;
-					}
+					y = (y2 - y1) / (z2 - z1) * (z - z1) - y1;
 				}
-
-				if (y <= -3071 || y > RISING_PLATFORM_Y - 60) { continue; }
-
-				brute_angles(m, plat, { x, y, z }, spd, normals);
-				printf("finished all angles for position %.9f, %.9f, %.9f\n", x, y, z);
-
-				plat->transform = trans;
-				plat->triangles = tri;
-				plat->normal = normals;
+			}
+			else {
+				if (z1 - z2 == 0) {
+					y = -y2;
+				}
+				else {
+					y = (y1 - y2) / (z1 - z2) * (z - z2) - y2;
+				}
 			}
 
-			/*
-			for (float z = min_z; z <= max_z; z++) {
-				float y;
+			if (y <= -3071) { continue; }
 
-				if (min_z == z1) {
-					if (z2 - z1 == 0) {
-						y = -y1;
-					}
-					else {
-						y = (y2 - y1) / (z2 - z1) * (z - z1) - y1;
-					}
+			brute_angles(m, plat, { x, y, z }, spd, normals);
+			printf("finished all angles for position %.9f, %.9f, %.9f\n", x, y, z);
+
+			plat->transform = trans;
+			plat->triangles = tri;
+			plat->normal = normals;
+		}
+	}
+
+	vector<int32_t> max_vector;
+	vector<int32_t> min_vector;
+
+	if (min_x == plat->triangles[1].vector1[0]) {
+		min_vector = plat->triangles[1].vector1;
+		max_vector = plat->triangles[1].vector3;
+	}
+	else {
+		min_vector = plat->triangles[1].vector3;
+		max_vector = plat->triangles[1].vector1;
+	}
+
+	for (float x = min_x; x <= max_x; x = x++) {
+		float y1 = line_point(plat->triangles[1].vector2, max_vector, x, true);
+		float z1 = line_point(plat->triangles[1].vector2, max_vector, x, false);
+
+		float y2 = line_point(min_vector, max_vector, x, true);
+		float z2 = line_point(min_vector, max_vector, x, false);
+
+		float min_z = min(z1, z2);
+		float max_z = max(z1, z2);
+
+		for (float z = min_z; z <= max_z; z++) {
+			float y;
+
+			if (min_z == z1) {
+				if (z2 - z1 == 0) {
+					y = -y1;
 				}
 				else {
-					if (z1 - z2 == 0) {
-						y = -y2;
-					}
-					else {
-						y = (y1 - y2) / (z1 - z2) * (z - z2) - y2;
-					}
+					y = (y2 - y1) / (z2 - z1) * (z - z1) - y1;
 				}
-
-				if (y <= -3071 || y >= RISING_PLATFORM_Y - 30) { continue; }
-
-				brute_angles(m, plat, { x, y, z }, spd, normals);
-				printf("finished all angles for position %.9f, %.9f, %.9f\n", x, y, z);
-
-				plat->transform = trans;
-				plat->triangles = tri;
-				plat->normal = normals;
-			}*/
-		}
-
-		vector<int32_t> max_vector;
-		vector<int32_t> min_vector;
-
-		if (min_x == plat->triangles[1].vector1[0]) {
-			min_vector = plat->triangles[1].vector1;
-			max_vector = plat->triangles[1].vector3;
-		}
-		else {
-			min_vector = plat->triangles[1].vector3;
-			max_vector = plat->triangles[1].vector1;
-		}
-
-		for (float x = min_x; x <= max_x; x = x++) {
-			float y1 = line_point(plat->triangles[1].vector2, max_vector, x, true);
-			float z1 = line_point(plat->triangles[1].vector2, max_vector, x, false);
-
-			float y2 = line_point(min_vector, max_vector, x, true);
-			float z2 = line_point(min_vector, max_vector, x, false);
-
-			float min_z = min(z1, z2);
-			float max_z = max(z1, z2);
-
-			for (float z = min_z; z <= max_z; z++) {
-				float y;
-
-				if (min_z == z1) {
-					if (z2 - z1 == 0) {
-						y = -y1;
-					}
-					else {
-						y = (y2 - y1) / (z2 - z1) * (z - z1) - y1;
-					}
-				}
-				else {
-					if (z1 - z2 == 0) {
-						y = -y2;
-					}
-					else {
-						y = (y1 - y2) / (z1 - z2) * (z - z2) - y2;
-					}
-				}
-
-				if (y <= -3071) { continue; }
-
-				brute_angles(m, plat, { x, y, z }, spd, normals);
-
-				printf("finished all angles for position %.9f, %.9f, %.9f\n", x, y, z);
-
-				plat->transform = trans;
-				plat->triangles = tri;
-				plat->normal = normals;
 			}
+			else {
+				if (z1 - z2 == 0) {
+					y = -y2;
+				}
+				else {
+					y = (y1 - y2) / (z1 - z2) * (z - z2) - y2;
+				}
+			}
+
+			if (y <= -3071) { continue; }
+
+			brute_angles(m, plat, { x, y, z }, spd, normals);
+
+			printf("finished all angles for position %.9f, %.9f, %.9f\n", x, y, z);
+
+			plat->transform = trans;
+			plat->triangles = tri;
+			plat->normal = normals;
 		}
 	}
 }
