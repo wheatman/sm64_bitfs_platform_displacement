@@ -21,7 +21,7 @@ public:
 		speed = spd;
 	}
 
-	int ground_step(int8_t x, int8_t y, float normalY);
+	int ground_step(int yaw, float normalY);
 	//vector<float> qstep(int8_t x, int8_t y);
 
 };
