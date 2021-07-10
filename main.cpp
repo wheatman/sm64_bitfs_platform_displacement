@@ -89,7 +89,7 @@ void brute_position(Mario* m, Platform* plat, float spd, vector<float> normals) 
 
 			if (min_z == z1) {
 				if (z2 - z1 == 0) {
-					y = -y1;
+					y = y1;
 				}
 				else {
 					y = (y2 - y1) / (z2 - z1) * (z - z1) - y1;
@@ -97,7 +97,7 @@ void brute_position(Mario* m, Platform* plat, float spd, vector<float> normals) 
 			}
 			else {
 				if (z1 - z2 == 0) {
-					y = -y2;
+					y = y2;
 				}
 				else {
 					y = (y1 - y2) / (z1 - z2) * (z - z2) - y2;
@@ -142,7 +142,7 @@ void brute_position(Mario* m, Platform* plat, float spd, vector<float> normals) 
 
 			if (min_z == z1) {
 				if (z2 - z1 == 0) {
-					y = -y1;
+					y = y1;
 				}
 				else {
 					y = (y2 - y1) / (z2 - z1) * (z - z1) - y1;
@@ -150,7 +150,7 @@ void brute_position(Mario* m, Platform* plat, float spd, vector<float> normals) 
 			}
 			else {
 				if (z1 - z2 == 0) {
-					y = -y2;
+					y = y2;
 				}
 				else {
 					y = (y1 - y2) / (z1 - z2) * (z - z2) - y2;
