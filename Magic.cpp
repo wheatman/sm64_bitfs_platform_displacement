@@ -68,18 +68,18 @@ float dist_calc(vector<float> x, vector<float> y) {
 float line_point(vector<int32_t> p1, vector<int32_t> p2, float x, bool followY) {
 	if (followY) {
 		if (p2[0] - p1[0] == 0) {
-			return -p1[1];
+			return p1[1];
 		}
 		else {
-			return (p2[1] - p1[1]) / (p2[0] - p1[0]) * (x - p1[0]) - p1[1];
+			return (p2[1] - p1[1]) / (p2[0] - p1[0]) * (x - p1[0]) + p1[1];
 		}
 	}
 	else {
 		if (p2[0] - p1[0] == 0) {
-			return -p1[2];
+			return p1[2];
 		}
 		else {
-			return (p2[2] - p1[2]) / (p2[0] - p1[0]) * (x - p1[0]) - p1[2];
+			return (p2[2] - p1[2]) / (p2[0] - p1[0]) * (x - p1[0]) + p1[2];
 		}
 	}
 }

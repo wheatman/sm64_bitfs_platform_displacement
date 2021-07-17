@@ -43,7 +43,7 @@ Surface* Platform::find_floor(Mario* m) {
 	Surface* floor = NULL;
 
 	for (int i = 0; i < triangles.size(); i++) {
-		Surface surf = triangles[0];
+		Surface surf = triangles[i];
 
 		int32_t x1 = surf.vector1[0];
 		int32_t z1 = surf.vector1[2];
@@ -148,7 +148,8 @@ void Platform::platform_logic(Mario* m) {
 	triangles[0].rotate(transform);
 	triangles[1].rotate(transform);
 
-	Surface* floor = this->find_floor(m);
+	// pretty sure you can always assume if here, then mario is on the floor
+	//Surface* floor = this->find_floor(m);
 
 	// If Mario is on the platform, adjust his position for the platform tilt.
 	if (floor) {

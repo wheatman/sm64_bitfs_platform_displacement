@@ -14,6 +14,8 @@ void brute_angles(Mario* m, Platform* plat, vector<float> m_pos, float spd, vect
 
 		if (m->ground_step(hau, plat->normal[1]) == 0) { continue; }
 
+		if (!plat->find_floor(m)) { continue; }
+
 		plat->platform_logic(m);
 
 		if (!check_inbounds(*m)) { continue; }
@@ -84,6 +86,29 @@ void brute_position(Mario* m, Platform* plat, float spd, vector<float> normals) 
 		float min_z = min(z1, z2);
 		float max_z = max(z1, z2);
 
+		if (max_z - min_z == 0) {
+			if (y1 <= -3071) { continue; }
+		}
+		/*
+		//(-3071 + min_y) / (max_y - min_y) * (max_z - min_z) + min_z;
+
+		float check_min, check_max;
+
+		if (min_z == z1) {
+			check_min = max(min_z, (-3071 + y1) / (y2 - y1) * (max_z - min_z) + min_z);
+			check_max = min(max_z, (-3071 + y2) / (y1 - y2) * (max_z - min_z) + min_z);
+		}
+		else {
+			check_min = max(min_z, (-3071 + y2) / (y1 - y2) * (max_z - min_z) + min_z);
+			check_max = min(max_z, (-3071 + y1) / (y2 - y1) * (max_z - min_z) + min_z);
+		}
+
+		float temp1 = min_z;
+		float temp2 = max_z;
+
+		if (check_min <= temp2) { min_z = check_min; }
+		if (check_max >= temp1) { max_z = check_max; }*/
+
 		for (float z = min_z; z <= max_z; z++) {
 			float y;
 
@@ -92,7 +117,7 @@ void brute_position(Mario* m, Platform* plat, float spd, vector<float> normals) 
 					y = y1;
 				}
 				else {
-					y = (y2 - y1) / (z2 - z1) * (z - z1) - y1;
+					y = (y2 - y1) / (z2 - z1) * (z - z1) + y1;
 				}
 			}
 			else {
@@ -100,7 +125,7 @@ void brute_position(Mario* m, Platform* plat, float spd, vector<float> normals) 
 					y = y2;
 				}
 				else {
-					y = (y1 - y2) / (z1 - z2) * (z - z2) - y2;
+					y = (y1 - y2) / (z1 - z2) * (z - z2) + y2;
 				}
 			}
 
@@ -145,7 +170,7 @@ void brute_position(Mario* m, Platform* plat, float spd, vector<float> normals) 
 					y = y1;
 				}
 				else {
-					y = (y2 - y1) / (z2 - z1) * (z - z1) - y1;
+					y = (y2 - y1) / (z2 - z1) * (z - z1) + y1;
 				}
 			}
 			else {
@@ -153,7 +178,7 @@ void brute_position(Mario* m, Platform* plat, float spd, vector<float> normals) 
 					y = y2;
 				}
 				else {
-					y = (y1 - y2) / (z1 - z2) * (z - z2) - y2;
+					y = (y1 - y2) / (z1 - z2) * (z - z2) + y2;
 				}
 			}
 
