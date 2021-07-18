@@ -42,6 +42,10 @@ void Platform::create_transform_from_normals() {
 Surface* Platform::find_floor(Mario* m) {
 	Surface* floor = NULL;
 
+	int32_t x = static_cast<int32_t>(m->pos[0]);
+	int32_t y = static_cast<int32_t>(m->pos[1]);
+	int32_t z = static_cast<int32_t>(m->pos[2]);
+
 	for (int i = 0; i < triangles.size(); i++) {
 		Surface surf = triangles[i];
 
@@ -51,7 +55,7 @@ Surface* Platform::find_floor(Mario* m) {
 		int32_t z2 = surf.vector2[2];
 
 		// Check that the point is within the triangle bounds.
-		if ((z1 - m->pos[2]) * (x2 - x1) - (x1 - m->pos[0]) * (z2 - z1) < 0) {
+		if ((z1 - z) * (x2 - x1) - (x1 - x) * (z2 - z1) < 0) {
 			continue;
 		}
 
@@ -59,10 +63,10 @@ Surface* Platform::find_floor(Mario* m) {
 		int32_t x3 = surf.vector3[0];
 		int32_t z3 = surf.vector3[2];
 
-		if ((z2 - m->pos[2]) * (x3 - x2) - (x2 - m->pos[0]) * (z3 - z2) < 0) {
+		if ((z2 - z) * (x3 - x2) - (x2 - x) * (z3 - z2) < 0) {
 			continue;
 		}
-		if ((z3 - m->pos[2]) * (x1 - x3) - (x3 - m->pos[0]) * (z1 - z3) < 0) {
+		if ((z3 - z) * (x1 - x3) - (x3 - x) * (z1 - z3) < 0) {
 			continue;
 		}
 
@@ -72,9 +76,9 @@ Surface* Platform::find_floor(Mario* m) {
 		float oo = -(nx * x1 + ny * surf.vector1[1] + nz * z1);
 
 		// Find the height of the floor at a given location.
-		float height = -(m->pos[0] * nx + nz * m->pos[2] + oo) / ny;
+		float height = -(x * nx + nz * z + oo) / ny;
 		// Checks for floor interaction with a 78 unit buffer.
-		if (m->pos[1] - (height + -78.0f) < 0.0f) {
+		if (y - (height + -78.0f) < 0.0f) {
 			continue;
 		}
 
@@ -145,8 +149,9 @@ void Platform::platform_logic(Mario* m) {
 	normal[2] = approach_by_increment(dz, normal[2], 0.01f);
 	create_transform_from_normals();
 
-	triangles[0].rotate(transform);
-	triangles[1].rotate(transform);
+	//triangles[0].rotate(transform);
+	//triangles[1].rotate(transform);
+	//don't care about rotating the triangles after the displacement
 
 	// pretty sure you can always assume if here, then mario is on the floor
 	//Surface* floor = this->find_floor(m);
