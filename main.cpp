@@ -4,7 +4,7 @@
 
 using namespace std;
 
-void brute_angles(Mario* m, Platform* plat, vector<float> m_pos, float spd, vector<float> normals) {
+void brute_angles(Mario* m, Platform* plat, vector<float> m_pos, float spd, vector<float> normals, vector<vector<float>> trans) {
 	//iterate over hau instead of sticks
 	for (int hau = 0; hau < 65535; hau += 16) {
 		m->pos = m_pos;
@@ -17,6 +17,7 @@ void brute_angles(Mario* m, Platform* plat, vector<float> m_pos, float spd, vect
 		if (!plat->find_floor(m)) { continue; }
 
 		plat->platform_logic(m);
+		plat->transform = trans;
 
 		if (!check_inbounds(*m)) { continue; }
 
@@ -67,8 +68,8 @@ void brute_position(Mario* m, Platform* plat, float spd, vector<float> normals) 
 	plat->normal = normals;
 
 	plat->create_transform_from_normals();
-	plat->triangles[0].rotate(plat->transform);
-	plat->triangles[1].rotate(plat->transform);
+	plat->triangles[0].rotate(plat->pos, plat->transform);
+	plat->triangles[1].rotate(plat->pos, plat->transform);
 
 	vector<vector<float>> trans = plat->transform;
 	vector<Surface> tri = plat->triangles;
@@ -131,10 +132,10 @@ void brute_position(Mario* m, Platform* plat, float spd, vector<float> normals) 
 
 			if (y <= -3071) { continue; }
 
-			brute_angles(m, plat, { x, y, z }, spd, normals);
+			brute_angles(m, plat, { x, y, z }, spd, normals, trans);
 			printf("finished all angles for position %.9f, %.9f, %.9f\n", x, y, z);
 
-			plat->transform = trans;
+			//plat->transform = trans;
 			plat->triangles = tri;
 			plat->normal = normals;
 		}
@@ -162,6 +163,10 @@ void brute_position(Mario* m, Platform* plat, float spd, vector<float> normals) 
 		float min_z = min(z1, z2);
 		float max_z = max(z1, z2);
 
+		if (max_z - min_z == 0) {
+			if (y1 <= -3071) { continue; }
+		}
+
 		for (float z = min_z; z <= max_z; z++) {
 			float y;
 
@@ -184,11 +189,10 @@ void brute_position(Mario* m, Platform* plat, float spd, vector<float> normals) 
 
 			if (y <= -3071) { continue; }
 
-			brute_angles(m, plat, { x, y, z }, spd, normals);
-
+			brute_angles(m, plat, { x, y, z }, spd, normals, trans);
 			printf("finished all angles for position %.9f, %.9f, %.9f\n", x, y, z);
 
-			plat->transform = trans;
+			//plat->transform = trans;
 			plat->triangles = tri;
 			plat->normal = normals;
 		}
@@ -199,7 +203,9 @@ void brute_normals(float spd, Mario* m, Platform* p) {
 	vector<float> normals;
 
 	for (float nx = -1.0f; nx <= 1.0f; nx = nextafterf(nx, 2.0f)) {
-		for (float nz = 0.0f; nz >= powf(nx, 2) - 1.0f; nz = nextafterf(nz, -2.0f)) {
+		float limit = powf(nx, 2) - 1.0f;
+
+		for (float nz = limit; nz <= abs(limit); nz = nextafterf(nz, abs(limit) + 1)) {
 			float ny = sqrtf(1 - powf(nx, 2) - powf(nz, 2));
 
 			normals = { nx, ny, nz };

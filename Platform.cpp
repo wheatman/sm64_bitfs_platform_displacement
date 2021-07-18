@@ -101,7 +101,7 @@ void Platform::platform_logic(Mario* m) {
 	vector<float> posBeforeRotation(3, 0);
 	vector<float> posAfterRotation(3, 0);
 
-	create_transform_from_normals();
+	//create_transform_from_normals();
 
 	// Mario's position
 	float mx;

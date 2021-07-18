@@ -33,7 +33,7 @@ public:
 		this->top = top;
 	}
 
-	void rotate(vector<vector<float>> transformation);
+	void rotate(vector<int32_t> pivot, vector<vector<float>> transformation);
 	void repr();
 };
 

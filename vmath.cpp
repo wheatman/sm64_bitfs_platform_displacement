@@ -67,14 +67,15 @@ vector<vector<float>> align_normal(vector<float> upDir, vector<float> pos) {
     vector<float> lateralDir(3, 0);
     vector<float> leftDir(3, 0);
     vector<float> forwardDir(3, 0);
+    vector<float> normal(3, 0);
 
     lateralDir = vec_set(gSineTable[0], 0, gCosineTable[0]);
-    upDir = vec_normalize(upDir);
+    normal = vec_normalize(upDir);
 
-    leftDir = vec_cross(upDir, lateralDir);
+    leftDir = vec_cross(normal, lateralDir);
     leftDir = vec_normalize(leftDir);
 
-    forwardDir = vec_cross(leftDir, upDir);
+    forwardDir = vec_cross(leftDir, normal);
     forwardDir = vec_normalize(forwardDir);
 
     dest[0][0] = leftDir[0];
@@ -82,9 +83,9 @@ vector<vector<float>> align_normal(vector<float> upDir, vector<float> pos) {
     dest[0][2] = leftDir[2];
     dest[3][0] = pos[0];
 
-    dest[1][0] = upDir[0];
-    dest[1][1] = upDir[1];
-    dest[1][2] = upDir[2];
+    dest[1][0] = normal[0];
+    dest[1][1] = normal[1];
+    dest[1][2] = normal[2];
     dest[3][1] = pos[1];
 
     dest[2][0] = forwardDir[0];
