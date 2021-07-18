@@ -21,26 +21,26 @@ void Surface::rotate(vector<int32_t> pivot, vector<vector<float>> transformation
 
 	for (int i = 0; i < 4; i++) {
 		for (int j = 0; j < 4; j++) {
-			rotated1[i] += v1[i] * transformation[i][j];
+			rotated1[i] += v1[j] * transformation[j][i];
 		}
 	}
 
 	for (int i = 0; i < 4; i++) {
 		for (int j = 0; j < 4; j++) {
-			rotated2[i] += v2[i] * transformation[i][j];
+			rotated2[i] += v2[j] * transformation[j][i];
 		}
 	}
 
 	for (int i = 0; i < 4; i++) {
 		for (int j = 0; j < 4; j++) {
-			rotated3[i] += v3[i] * transformation[i][j];
+			rotated3[i] += v3[j] * transformation[j][i];
 		}
 	}
 
 	for (int i = 0; i < 3; i++) {
-		vector1[i] = static_cast<int32_t>(rotated1[i]) + pivot[0];
-		vector2[i] = static_cast<int32_t>(rotated2[i]) + pivot[1];
-		vector3[i] = static_cast<int32_t>(rotated3[i]) + pivot[2];
+		vector1[i] = static_cast<int32_t>(rotated1[i]) + pivot[i];
+		vector2[i] = static_cast<int32_t>(rotated2[i]) + pivot[i];
+		vector3[i] = static_cast<int32_t>(rotated3[i]) + pivot[i];
 	}
 }
 
