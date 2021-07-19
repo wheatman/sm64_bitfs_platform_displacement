@@ -15,20 +15,20 @@ void Surface::rotate(const Vec3s& pivot, const Mat4& transformation) {
 		v3[i] = vector3[i] - pivot[i];
 	}
 
-	for (int i = 0; i < 4; i++) {
-		for (int j = 0; j < 4; j++) {
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 3; j++) {
 			rotated1[i] += v1[j] * transformation[j][i];
 		}
 	}
 
-	for (int i = 0; i < 4; i++) {
-		for (int j = 0; j < 4; j++) {
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 3; j++) {
 			rotated2[i] += v2[j] * transformation[j][i];
 		}
 	}
 
-	for (int i = 0; i < 4; i++) {
-		for (int j = 0; j < 4; j++) {
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 3; j++) {
 			rotated3[i] += v3[j] * transformation[j][i];
 		}
 	}

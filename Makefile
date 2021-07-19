@@ -29,7 +29,7 @@ main.o: main.cpp Mario.h Magic.h Platform.h
 main: Magic.o Mario.o Platform.o Surface.o Trig.o vmath.o main.o
 	$(CXX) $(CXXFLAGS) -o main Magic.o Mario.o Platform.o Surface.o Trig.o vmath.o main.o  $(LDFLAGS)
 clean:
-	rm *.o main
+	del *.o main
 
 
 
