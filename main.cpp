@@ -25,9 +25,10 @@ void brute_angles(Mario* m, Platform* plat, const vector<float>& m_pos, float sp
 		m->pos = m_pos;
 		m->speed = spd;
 
-		plat->normal = normals;
 
-		if (m->ground_step(hau, plat->normal[1]) == 0) { continue; }
+		if (m->ground_step(hau, normals[1]) == 0) { continue; }
+		
+		plat->normal = normals;
 
 		if (!plat->find_floor(m)) { continue; }
 

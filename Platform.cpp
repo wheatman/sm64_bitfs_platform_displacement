@@ -40,15 +40,15 @@ void Platform::create_transform_from_normals() {
     transform = align_normal(normal, position);
 }
 
-Surface* Platform::find_floor(Mario* m) {
-	Surface* floor = NULL;
+Surface const * Platform::find_floor(Mario* m) const {
+	Surface const * floor = NULL;
 
 	int32_t x = static_cast<int32_t>(m->pos[0]);
 	int32_t y = static_cast<int32_t>(m->pos[1]);
 	int32_t z = static_cast<int32_t>(m->pos[2]);
 
 	for (int i = 0; i < triangles.size(); i++) {
-		Surface& surf = triangles[i];
+		const Surface& surf = triangles[i];
 
 		int32_t x1 = surf.vector1[0];
 		int32_t z1 = surf.vector1[2];
@@ -155,7 +155,7 @@ void Platform::platform_logic(Mario* m) {
 	//don't care about rotating the triangles after the displacement
 
 	// pretty sure you can always assume if here, then mario is on the floor
-	Surface* floor = this->find_floor(m);
+	Surface const* floor = this->find_floor(m);
 
 	// If Mario is on the platform, adjust his position for the platform tilt.
 	if (floor) {

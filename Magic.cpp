@@ -51,16 +51,14 @@ pair<int16_t, float> calc_intended_yawmag(int8_t stickX, int8_t stickY) {
 }
 
 bool check_inbounds(const Mario& m) {
-	float x_mod = fmodf(m.pos[0] + 32768, 65536) - 32768;
-	float y_mod = fmodf(m.pos[1] + 32768, 65536) - 32768;
-	float z_mod = fmodf(m.pos[2] + 32768, 65536) - 32768;
+	// float x_mod = fmodf(m.pos[0] + 32768, 65536) - 32768;
+	// float y_mod = fmodf(m.pos[1] + 32768, 65536) - 32768;
+	// float z_mod = fmodf(m.pos[2] + 32768, 65536) - 32768;
+	short x_mod = (short)(int)m.pos[0];
+	short y_mod = (short)(int)m.pos[1];
+	short z_mod = (short)(int)m.pos[2];
 
-	if (abs(x_mod) < 8192 && abs(y_mod) < 8192 && abs(z_mod) < 8192) {
-		return true;
-	}
-	else {
-		return false;
-	}
+	return (abs(x_mod) < 8192 && abs(y_mod) < 8192 && abs(z_mod) < 8192);
 }
 
 float dist_calc(const vector<float>& x, const vector<float>& y) {
