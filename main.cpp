@@ -1,10 +1,25 @@
 #include "Mario.h"
 #include "Magic.h"
 #include "Platform.h"
+#include <cmath>
+
+#ifdef _OPENMP
+#include <omp.h> // This line won't add the library if you don't compile with -fopenmp option.
+#ifdef _MSC_VER
+// For Microsoft compiler
+#define OMP_FOR __pragma(omp parallel for)
+#else // assuming "__GNUC__" is defined
+// For GCC compiler
+#define OMP_FOR _Pragma("omp parallel for")
+#endif
+#else
+#define omp_get_max_threads() 1
+#define OMP_FOR
+#endif
 
 using namespace std;
 
-void brute_angles(Mario* m, Platform* plat, vector<float> m_pos, float spd, vector<float> normals, vector<vector<float>> trans) {
+void brute_angles(Mario* m, Platform* plat, const vector<float>& m_pos, float spd, const vector<float>& normals, const vector<vector<float>>& trans) {
 	//iterate over hau instead of sticks
 	for (int hau = 0; hau < 65535; hau += 16) {
 		m->pos = m_pos;
@@ -64,15 +79,15 @@ void brute_angles(Mario* m, Platform* plat, vector<float> m_pos, float spd, vect
 	}*/
 }
 
-void brute_position(Mario* m, Platform* plat, float spd, vector<float> normals) {
+void brute_position(Mario* m, Platform* plat, float spd, const vector<float>& normals) {
 	plat->normal = normals;
 
 	plat->create_transform_from_normals();
 	plat->triangles[0].rotate(plat->pos, plat->transform);
 	plat->triangles[1].rotate(plat->pos, plat->transform);
 
-	vector<vector<float>> trans = plat->transform;
-	vector<Surface> tri = plat->triangles;
+	const vector<vector<float>>& trans = plat->transform;
+	const vector<Surface>& tri = plat->triangles;
 
 	float max_x = max(plat->triangles[1].vector1[0], plat->triangles[1].vector3[0]);
 	float min_x = min(plat->triangles[1].vector1[0], plat->triangles[1].vector3[0]);
@@ -153,7 +168,7 @@ void brute_position(Mario* m, Platform* plat, float spd, vector<float> normals) 
 		max_vector = plat->triangles[1].vector1;
 	}
 
-	for (float x = min_x; x <= max_x; x = x++) {
+	for (float x = min_x; x <= max_x; x = x+1) {
 		float y1 = line_point(plat->triangles[1].vector2, max_vector, x, true);
 		float z1 = line_point(plat->triangles[1].vector2, max_vector, x, false);
 
@@ -200,7 +215,6 @@ void brute_position(Mario* m, Platform* plat, float spd, vector<float> normals) 
 }
 
 void brute_normals(float spd, Mario* m, Platform* p) {
-	vector<float> normals;
 
 	for (float nx = -1.0f; nx <= 1.0f; nx = nextafterf(nx, 2.0f)) {
 		float limit = powf(nx, 2) - 1.0f;
@@ -208,9 +222,7 @@ void brute_normals(float spd, Mario* m, Platform* p) {
 		for (float nz = limit; nz <= abs(limit); nz = nextafterf(nz, abs(limit) + 1)) {
 			float ny = sqrtf(1 - powf(nx, 2) - powf(nz, 2));
 
-			normals = { nx, ny, nz };
-
-			brute_position(m, p, spd, normals);
+			brute_position(m, p, spd, { nx, ny, nz });
 
 			printf("Finished all normals for %.9f, %.9f, %.9f\n", nx, ny, nz);
 		}
@@ -218,19 +230,31 @@ void brute_normals(float spd, Mario* m, Platform* p) {
 }
 
 void brute_speed() {
-	float spd = 58000000.0f;
+  float starting_spd = 58000000.0f;
+  float ending_spd = 1000000000.0;
+  float per_worker = (ending_spd - starting_spd) / omp_get_max_threads();
+  vector<float> speeds(omp_get_max_threads() + 1);
+  for (int i = 0; i < omp_get_max_threads(); i++) {
+    speeds[i] = starting_spd + i * per_worker;
+  }
+  speeds[omp_get_max_threads()] = ending_spd;
+  OMP_FOR
+  for (int i = 0; i < omp_get_max_threads(); i++) {
+    float spd = speeds[i];
+    float local_end_spd = speeds[i + 1];
 
-	Mario mario;
-	Platform plat;
+    Mario mario;
+    Platform plat;
 
-	while (spd < 1000000000.0) {
-		mario.speed = spd;
+    while (spd < local_end_spd) {
+      mario.speed = spd;
 
-		brute_normals(spd, &mario, &plat);
+      brute_normals(spd, &mario, &plat);
 
-		spd = nextafterf(spd, 2000000000.0f);
-		printf("Finished all loops for speed %.9f\n", spd);
-	}
+      spd = nextafterf(spd, 2000000000.0f);
+      printf("Finished all loops for speed %.9f\n", spd);
+    }
+  }
 }
 
 int main() {

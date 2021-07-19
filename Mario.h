@@ -16,7 +16,7 @@ public:
 
 	Mario() {}
 
-	Mario(vector<float>position, float spd) {
+	Mario(const vector<float>& position, float spd) {
 		pos = position;
 		speed = spd;
 	}

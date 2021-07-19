@@ -1,4 +1,6 @@
 #include "Magic.h"
+#include "Mario.h"
+#include <cmath>
 
 pair<int16_t, float> calc_intended_yawmag(int8_t stickX, int8_t stickY) {
 	int16_t intYaw;
@@ -48,7 +50,7 @@ pair<int16_t, float> calc_intended_yawmag(int8_t stickX, int8_t stickY) {
 	return { intYaw, intMag };
 }
 
-bool check_inbounds(Mario m) {
+bool check_inbounds(const Mario& m) {
 	float x_mod = fmodf(m.pos[0] + 32768, 65536) - 32768;
 	float y_mod = fmodf(m.pos[1] + 32768, 65536) - 32768;
 	float z_mod = fmodf(m.pos[2] + 32768, 65536) - 32768;
@@ -61,11 +63,11 @@ bool check_inbounds(Mario m) {
 	}
 }
 
-float dist_calc(vector<float> x, vector<float> y) {
+float dist_calc(const vector<float>& x, const vector<float>& y) {
 	return sqrtf(powf(y[0] - x[0], 2) + powf(y[1] - x[1], 2) + powf(y[2] - x[2], 2));
 }
 
-float line_point(vector<int32_t> p1, vector<int32_t> p2, float x, bool followY) {
+float line_point(const vector<int32_t>& p1, const vector<int32_t>& p2, float x, bool followY) {
 	if (followY) {
 		if (p2[0] - p1[0] == 0) {
 			return p1[1];

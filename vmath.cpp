@@ -1,4 +1,5 @@
 #include "vmath.h"
+#include <cmath>
 
 /**
  * Multiply a vector by a matrix of the form
