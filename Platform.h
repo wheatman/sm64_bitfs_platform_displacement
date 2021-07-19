@@ -13,10 +13,10 @@ using namespace std;
 class Platform
 {
 public:
-	const vector<int32_t> pos = { -1945, -3225, -715 };
-	vector<float> normal = { 0, 1, 0 };
-	vector<vector<float>> transform = { {0,0,0,0}, {0,0,0,0}, {0,0,0,0}, {0,0,0,0} };
-	vector<Surface> triangles = { Surface(true), Surface(false) };
+	const Vec3s pos = { -1945, -3225, -715 };
+	Vec3f normal = { 0, 1, 0 };
+	Mat4 transform = { {0,0,0,0}, {0,0,0,0}, {0,0,0,0}, {0,0,0,0} };
+	Vec2S triangles = { Surface(true), Surface(false) };
 
 	Platform() {
 		create_transform_from_normals();

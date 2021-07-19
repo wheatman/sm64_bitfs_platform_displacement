@@ -31,29 +31,23 @@ float approach_by_increment(float goal, float src, float inc) {
  * and the object's position.
  */
 void Platform::create_transform_from_normals() {
-	vector<float> position = { 0, 0, 0 };
-
-	position[0] = pos[0];
-	position[1] = pos[1];
-	position[2] = pos[2];
-
-    transform = align_normal(normal, position);
+	mtxf_align_terrain_normal(transform, normal, pos);
 }
 
 Surface const * Platform::find_floor(Mario* m) const {
 	Surface const * floor = NULL;
 
-	int32_t x = static_cast<int32_t>(m->pos[0]);
-	int32_t y = static_cast<int32_t>(m->pos[1]);
-	int32_t z = static_cast<int32_t>(m->pos[2]);
+	int16_t x = static_cast<int16_t>(static_cast<int>(m->pos[0]));
+	int16_t y = static_cast<int16_t>(static_cast<int>(m->pos[1]));
+	int16_t z = static_cast<int16_t>(static_cast<int>(m->pos[2]));
 
-	for (int i = 0; i < triangles.size(); i++) {
+	for (int i = 0; i < 3; i++) {
 		const Surface& surf = triangles[i];
 
-		int32_t x1 = surf.vector1[0];
-		int32_t z1 = surf.vector1[2];
-		int32_t x2 = surf.vector2[0];
-		int32_t z2 = surf.vector2[2];
+		int16_t x1 = surf.vector1[0];
+		int16_t z1 = surf.vector1[2];
+		int16_t x2 = surf.vector2[0];
+		int16_t z2 = surf.vector2[2];
 
 		// Check that the point is within the triangle bounds.
 		if ((z1 - z) * (x2 - x1) - (x1 - x) * (z2 - z1) < 0) {
@@ -61,8 +55,8 @@ Surface const * Platform::find_floor(Mario* m) const {
 		}
 
 		// To slightly save on computation time, set this later.
-		int32_t x3 = surf.vector3[0];
-		int32_t z3 = surf.vector3[2];
+		int16_t x3 = surf.vector3[0];
+		int16_t z3 = surf.vector3[2];
 
 		if ((z2 - z) * (x3 - x2) - (x2 - x) * (z3 - z2) < 0) {
 			continue;
@@ -98,9 +92,9 @@ void Platform::platform_logic(Mario* m) {
 	float dz;
 	float d;
 
-	vector<float> dist(3, 0);
-	vector<float> posBeforeRotation(3, 0);
-	vector<float> posAfterRotation(3, 0);
+	Vec3f dist;
+	Vec3f posBeforeRotation;
+	Vec3f posAfterRotation;
 
 	//create_transform_from_normals();
 
@@ -116,7 +110,7 @@ void Platform::platform_logic(Mario* m) {
 	dist[0] = mx - -1945.0;
 	dist[1] = my - -3225.0;
 	dist[2] = mz - -715.0;
-	posBeforeRotation = linear_mtxf_mul_vec3f(transform, dist);
+	linear_mtxf_mul_vec3f(posBeforeRotation, transform, dist);
 
 	dx = mx - -1945.0;
 	dy = 500.0f;
@@ -159,7 +153,7 @@ void Platform::platform_logic(Mario* m) {
 
 	// If Mario is on the platform, adjust his position for the platform tilt.
 	if (floor) {
-		posAfterRotation = linear_mtxf_mul_vec3f(transform, dist);
+		linear_mtxf_mul_vec3f(posAfterRotation, transform, dist);
 		mx += posAfterRotation[0] - posBeforeRotation[0];
 		my += posAfterRotation[1] - posBeforeRotation[1];
 		mz += posAfterRotation[2] - posBeforeRotation[2];

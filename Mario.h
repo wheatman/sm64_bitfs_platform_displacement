@@ -2,6 +2,7 @@
 
 #include <vector>
 #include "Magic.h"
+#include "vmath.h"
 
 using namespace std;
 
@@ -11,16 +12,17 @@ using namespace std;
 class Mario
 {
 public:
-	vector<float> pos = vector<float>(3, 0);
+	Vec3f pos;
 	float speed;
 
 	Mario() {}
 
-	Mario(const vector<float>& position, float spd) {
-		pos = position;
+	Mario(const Vec3f& position, float spd) {
+		set_pos(position);
 		speed = spd;
 	}
 
+	void set_pos(const Vec3f& position);
 	int ground_step(int yaw, float normalY);
 	//vector<float> qstep(int8_t x, int8_t y);
 
