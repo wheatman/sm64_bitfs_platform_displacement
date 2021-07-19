@@ -148,7 +148,7 @@ void brute_position(Mario* m, Platform* plat, float spd, const vector<float>& no
 			if (y <= -3071) { continue; }
 
 			brute_angles(m, plat, { x, y, z }, spd, normals, trans);
-			printf("finished all angles for position %.9f, %.9f, %.9f\n", x, y, z);
+			fprintf(stderr, "finished all angles for position %.9f, %.9f, %.9f\n", x, y, z);
 
 			//plat->transform = trans;
 			plat->triangles = tri;
@@ -205,7 +205,7 @@ void brute_position(Mario* m, Platform* plat, float spd, const vector<float>& no
 			if (y <= -3071) { continue; }
 
 			brute_angles(m, plat, { x, y, z }, spd, normals, trans);
-			printf("finished all angles for position %.9f, %.9f, %.9f\n", x, y, z);
+			fprintf(stderr, "finished all angles for position %.9f, %.9f, %.9f\n", x, y, z);
 
 			//plat->transform = trans;
 			plat->triangles = tri;
@@ -224,7 +224,7 @@ void brute_normals(float spd, Mario* m, Platform* p) {
 
 			brute_position(m, p, spd, { nx, ny, nz });
 
-			printf("Finished all normals for %.9f, %.9f, %.9f\n", nx, ny, nz);
+			fprintf(stderr, "Finished all normals for %.9f, %.9f, %.9f\n", nx, ny, nz);
 		}
 	}
 }
@@ -252,7 +252,7 @@ void brute_speed() {
       brute_normals(spd, &mario, &plat);
 
       spd = nextafterf(spd, 2000000000.0f);
-      printf("Finished all loops for speed %.9f\n", spd);
+	  fprintf(stderr, "Finished all loops for speed %.9f\n", spd);
     }
   }
 }
