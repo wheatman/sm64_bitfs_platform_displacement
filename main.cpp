@@ -3,6 +3,20 @@
 #include "Platform.h"
 #include <cmath>
 
+#ifdef _OPENMP
+#include <omp.h> // This line won't add the library if you don't compile with -fopenmp option.
+#ifdef _MSC_VER
+// For Microsoft compiler
+#define OMP_FOR __pragma(omp parallel for)
+#else // assuming "__GNUC__" is defined
+// For GCC compiler
+#define OMP_FOR _Pragma("omp parallel for")
+#endif
+#else
+#define omp_get_max_threads() 1
+#define OMP_FOR
+#endif
+
 using namespace std;
 
 void brute_angles(Mario* m, Platform* plat, const vector<float>& m_pos, float spd, const vector<float>& normals, const vector<vector<float>>& trans) {
@@ -216,19 +230,31 @@ void brute_normals(float spd, Mario* m, Platform* p) {
 }
 
 void brute_speed() {
-	float spd = 58000000.0f;
+  float starting_spd = 58000000.0f;
+  float ending_spd = 1000000000.0;
+  float per_worker = (ending_spd - starting_spd) / omp_get_max_threads();
+  vector<float> speeds(omp_get_max_threads() + 1);
+  for (int i = 0; i < omp_get_max_threads(); i++) {
+    speeds[i] = starting_spd + i * per_worker;
+  }
+  speeds[omp_get_max_threads()] = ending_spd;
+  OMP_FOR
+  for (int i = 0; i < omp_get_max_threads(); i++) {
+    float spd = speeds[i];
+    float local_end_spd = speeds[i + 1];
 
-	Mario mario;
-	Platform plat;
+    Mario mario;
+    Platform plat;
 
-	while (spd < 1000000000.0) {
-		mario.speed = spd;
+    while (spd < local_end_spd) {
+      mario.speed = spd;
 
-		brute_normals(spd, &mario, &plat);
+      brute_normals(spd, &mario, &plat);
 
-		spd = nextafterf(spd, 2000000000.0f);
-		printf("Finished all loops for speed %.9f\n", spd);
-	}
+      spd = nextafterf(spd, 2000000000.0f);
+      printf("Finished all loops for speed %.9f\n", spd);
+    }
+  }
 }
 
 int main() {

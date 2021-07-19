@@ -1,6 +1,6 @@
 CXX = clang++
-CXXFLAGS  = -g -Wall -O3
-LDFLAGS = -lm
+CXXFLAGS  = -g -Wall -O3 -fopenmp=libomp
+LDFLAGS = -lm 
 .PHONY : clean
 
 default: main
