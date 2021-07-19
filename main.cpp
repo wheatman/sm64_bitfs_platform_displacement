@@ -23,6 +23,9 @@ using namespace std;
 void brute_angles(Mario* m, Platform* plat, const Vec3f& m_pos, float spd, const Vec3f & normals, const Mat4& trans) {
 	//iterate over hau instead of sticks
 	for (int hau = 0; hau < 65535; hau += 16) {
+		if (abs((short)(int)(m_pos[0] + gSineTable[(hau & 0xFFFF) >> 4] * normals[1] * (spd / 4.0f))) >= 8192) {
+			continue;
+		}
 		m->set_pos(m_pos);
 		m->speed = spd;
 
