@@ -1,5 +1,5 @@
 CXX = clang++
-CXXFLAGS  = -g -Wall
+CXXFLAGS  = -g -Wall -O3
 LDFLAGS = -lm
 .PHONY : clean
 

@@ -1,6 +1,6 @@
 #include "Surface.h"
 
-void Surface::rotate(vector<int32_t> pivot, vector<vector<float>> transformation) {
+void Surface::rotate(const vector<int32_t>& pivot, const vector<vector<float>>& transformation) {
 	vector<int32_t> v1 = vector1;
 	vector<int32_t> v2 = vector2;
 	vector<int32_t> v3 = vector3;
