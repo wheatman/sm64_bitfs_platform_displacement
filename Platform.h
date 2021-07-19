@@ -13,7 +13,7 @@ using namespace std;
 class Platform
 {
 public:
-	const Vec3s pos = { -1945, -3225, -715 };
+	Vec3s pos = { -1945, -3225, -715 };
 	Vec3f normal = { 0, 1, 0 };
 	Mat4 transform = { {0,0,0,0}, {0,0,0,0}, {0,0,0,0}, {0,0,0,0} };
 	Vec2S triangles = { Surface(true), Surface(false) };

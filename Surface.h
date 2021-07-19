@@ -14,7 +14,7 @@ using namespace std;
 class Surface
 {
 public:
-	Vec3s vector1 = { 0,0,0 };
+	Vec3s vector1;
 	Vec3s vector2;
 	Vec3s vector3;
 	bool top;
@@ -47,5 +47,7 @@ public:
 	void rotate(const Vec3s& pivot, const Mat4& transformation);
 	void repr();
 };
+
+typedef Surface Vec2S[2];
 
 #endif

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Trig.h"
+#include "vmath.h"
 #include <stdexcept>
 #include <utility>
 
