@@ -5,7 +5,7 @@
 
 using namespace std;
 
-void brute_angles(Mario* m, Platform* plat, vector<float> m_pos, float spd, vector<float> normals, vector<vector<float>> trans) {
+void brute_angles(Mario* m, Platform* plat, const vector<float>& m_pos, float spd, const vector<float>& normals, const vector<vector<float>>& trans) {
 	//iterate over hau instead of sticks
 	for (int hau = 0; hau < 65535; hau += 16) {
 		m->pos = m_pos;
@@ -65,15 +65,15 @@ void brute_angles(Mario* m, Platform* plat, vector<float> m_pos, float spd, vect
 	}*/
 }
 
-void brute_position(Mario* m, Platform* plat, float spd, vector<float> normals) {
+void brute_position(Mario* m, Platform* plat, float spd, const vector<float>& normals) {
 	plat->normal = normals;
 
 	plat->create_transform_from_normals();
 	plat->triangles[0].rotate(plat->pos, plat->transform);
 	plat->triangles[1].rotate(plat->pos, plat->transform);
 
-	vector<vector<float>> trans = plat->transform;
-	vector<Surface> tri = plat->triangles;
+	const vector<vector<float>>& trans = plat->transform;
+	const vector<Surface>& tri = plat->triangles;
 
 	float max_x = max(plat->triangles[1].vector1[0], plat->triangles[1].vector3[0]);
 	float min_x = min(plat->triangles[1].vector1[0], plat->triangles[1].vector3[0]);
@@ -201,7 +201,6 @@ void brute_position(Mario* m, Platform* plat, float spd, vector<float> normals) 
 }
 
 void brute_normals(float spd, Mario* m, Platform* p) {
-	vector<float> normals;
 
 	for (float nx = -1.0f; nx <= 1.0f; nx = nextafterf(nx, 2.0f)) {
 		float limit = powf(nx, 2) - 1.0f;
@@ -209,9 +208,7 @@ void brute_normals(float spd, Mario* m, Platform* p) {
 		for (float nz = limit; nz <= abs(limit); nz = nextafterf(nz, abs(limit) + 1)) {
 			float ny = sqrtf(1 - powf(nx, 2) - powf(nz, 2));
 
-			normals = { nx, ny, nz };
-
-			brute_position(m, p, spd, normals);
+			brute_position(m, p, spd, { nx, ny, nz });
 
 			printf("Finished all normals for %.9f, %.9f, %.9f\n", nx, ny, nz);
 		}
