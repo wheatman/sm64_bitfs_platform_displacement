@@ -1,6 +1,7 @@
 #include "Mario.h"
 #include "Magic.h"
 #include "Platform.h"
+#include "vmath.h"
 #include <cmath>
 
 #ifdef _OPENMP
@@ -19,21 +20,24 @@
 
 using namespace std;
 
-void brute_angles(Mario* m, Platform* plat, const vector<float>& m_pos, float spd, const vector<float>& normals, const vector<vector<float>>& trans) {
+void brute_angles(Mario* m, Platform* plat, const Vec3f& m_pos, float spd, const Vec3f & normals, const Mat4& trans) {
 	//iterate over hau instead of sticks
 	for (int hau = 0; hau < 65535; hau += 16) {
-		m->pos = m_pos;
+		m->set_pos(m_pos);
 		m->speed = spd;
 
 
 		if (m->ground_step(hau, normals[1]) == 0) { continue; }
 		
-		plat->normal = normals;
+		for (int i = 0; i < 4; i++) { plat->normal[i] = normals[i]; }
 
 		if (!plat->find_floor(m)) { continue; }
 
 		plat->platform_logic(m);
-		plat->transform = trans;
+
+		for (int i = 0; i < 5; i++) {
+			for (int j = 0; j < 5; j++) { plat->transform[i][j] = trans[i][j]; }
+		}
 
 		if (!check_inbounds(*m)) { continue; }
 
@@ -80,15 +84,15 @@ void brute_angles(Mario* m, Platform* plat, const vector<float>& m_pos, float sp
 	}*/
 }
 
-void brute_position(Mario* m, Platform* plat, float spd, const vector<float>& normals) {
-	plat->normal = normals;
+void brute_position(Mario* m, Platform* plat, float spd, const Vec3f& normals) {
+	for (int i = 0; i < 4; i++) { plat->normal[i] = normals[i]; }
 
 	plat->create_transform_from_normals();
 	plat->triangles[0].rotate(plat->pos, plat->transform);
 	plat->triangles[1].rotate(plat->pos, plat->transform);
 
-	const vector<vector<float>>& trans = plat->transform;
-	const vector<Surface>& tri = plat->triangles;
+	const Mat4& trans = plat->transform;
+	const Vec2S& tri = plat->triangles;
 
 	float max_x = max(plat->triangles[1].vector1[0], plat->triangles[1].vector3[0]);
 	float min_x = min(plat->triangles[1].vector1[0], plat->triangles[1].vector3[0]);
@@ -152,21 +156,22 @@ void brute_position(Mario* m, Platform* plat, float spd, const vector<float>& no
 			fprintf(stderr, "finished all angles for position %.9f, %.9f, %.9f\n", x, y, z);
 
 			//plat->transform = trans;
-			plat->triangles = tri;
-			plat->normal = normals;
+
+			for (int i = 0; i < 3; i++) { plat->triangles[i] = tri[i]; }
+			for (int i = 0; i < 4; i++) { plat->normal[i] = normals[i]; }
 		}
 	}
 
-	vector<int32_t> max_vector;
-	vector<int32_t> min_vector;
+	Vec3s max_vector;
+	Vec3s min_vector;
 
 	if (min_x == plat->triangles[1].vector1[0]) {
-		min_vector = plat->triangles[1].vector1;
-		max_vector = plat->triangles[1].vector3;
+		for (int i = 0; i < 4; i++) { min_vector[i] = plat->triangles[1].vector1[i]; }
+		for (int i = 0; i < 4; i++) { max_vector[i] = plat->triangles[1].vector3[i]; }
 	}
 	else {
-		min_vector = plat->triangles[1].vector3;
-		max_vector = plat->triangles[1].vector1;
+		for (int i = 0; i < 4; i++) { min_vector[i] = plat->triangles[1].vector3[i]; }
+		for (int i = 0; i < 4; i++) { max_vector[i] = plat->triangles[1].vector1[i]; }
 	}
 
 	for (float x = min_x; x <= max_x; x = x+1) {
@@ -209,8 +214,8 @@ void brute_position(Mario* m, Platform* plat, float spd, const vector<float>& no
 			fprintf(stderr, "finished all angles for position %.9f, %.9f, %.9f\n", x, y, z);
 
 			//plat->transform = trans;
-			plat->triangles = tri;
-			plat->normal = normals;
+			for (int i = 0; i < 3; i++) { plat->triangles[i] = tri[i]; }
+			for (int i = 0; i < 4; i++) { plat->normal[i] = normals[i]; }
 		}
 	}
 }

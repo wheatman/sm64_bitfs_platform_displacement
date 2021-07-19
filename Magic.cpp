@@ -61,11 +61,11 @@ bool check_inbounds(const Mario& m) {
 	return (abs(x_mod) < 8192 && abs(y_mod) < 8192 && abs(z_mod) < 8192);
 }
 
-float dist_calc(const vector<float>& x, const vector<float>& y) {
+float dist_calc(const Vec3f& x, const Vec3f& y) {
 	return sqrtf(powf(y[0] - x[0], 2) + powf(y[1] - x[1], 2) + powf(y[2] - x[2], 2));
 }
 
-float line_point(const vector<int32_t>& p1, const vector<int32_t>& p2, float x, bool followY) {
+float line_point(const Vec3s& p1, const Vec3s& p2, float x, bool followY) {
 	if (followY) {
 		if (p2[0] - p1[0] == 0) {
 			return p1[1];
