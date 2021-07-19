@@ -1,4 +1,6 @@
 #include "Magic.h"
+#include "Mario.h"
+#include <cmath>
 
 pair<int16_t, float> calc_intended_yawmag(int8_t stickX, int8_t stickY) {
 	int16_t intYaw;
@@ -48,7 +50,7 @@ pair<int16_t, float> calc_intended_yawmag(int8_t stickX, int8_t stickY) {
 	return { intYaw, intMag };
 }
 
-bool check_inbounds(Mario m) {
+bool check_inbounds(const Mario& m) {
 	float x_mod = fmodf(m.pos[0] + 32768, 65536) - 32768;
 	float y_mod = fmodf(m.pos[1] + 32768, 65536) - 32768;
 	float z_mod = fmodf(m.pos[2] + 32768, 65536) - 32768;

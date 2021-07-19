@@ -1,6 +1,7 @@
 #include "Mario.h"
 #include "Magic.h"
 #include "Platform.h"
+#include <cmath>
 
 using namespace std;
 
@@ -153,7 +154,7 @@ void brute_position(Mario* m, Platform* plat, float spd, vector<float> normals) 
 		max_vector = plat->triangles[1].vector1;
 	}
 
-	for (float x = min_x; x <= max_x; x = x++) {
+	for (float x = min_x; x <= max_x; x = x+1) {
 		float y1 = line_point(plat->triangles[1].vector2, max_vector, x, true);
 		float z1 = line_point(plat->triangles[1].vector2, max_vector, x, false);
 

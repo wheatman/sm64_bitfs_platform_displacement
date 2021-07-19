@@ -1,4 +1,5 @@
 #include "Platform.h"
+#include <cmath>
 
 /**
  * Returns a value that is src incremented/decremented by inc towards goal
@@ -154,7 +155,7 @@ void Platform::platform_logic(Mario* m) {
 	//don't care about rotating the triangles after the displacement
 
 	// pretty sure you can always assume if here, then mario is on the floor
-	//Surface* floor = this->find_floor(m);
+	Surface* floor = this->find_floor(m);
 
 	// If Mario is on the platform, adjust his position for the platform tilt.
 	if (floor) {
