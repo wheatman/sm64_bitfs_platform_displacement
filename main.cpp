@@ -32,24 +32,24 @@ void brute_angles(Mario* m, Platform* plat, const Vec3f& m_pos, float spd, const
 
 		if (m->ground_step(hau, normals[1]) == 0) { continue; }
 		
-		for (int i = 0; i < 4; i++) { plat->normal[i] = normals[i]; }
+		for (int i = 0; i < 3; i++) { plat->normal[i] = normals[i]; }
 
 		if (!plat->find_floor(m)) { continue; }
 
 		plat->platform_logic(m);
 
-		for (int i = 0; i < 5; i++) {
-			for (int j = 0; j < 5; j++) { plat->transform[i][j] = trans[i][j]; }
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 4; j++) { plat->transform[i][j] = trans[i][j]; }
 		}
 
 		if (!check_inbounds(*m)) { continue; }
 
-		if (m->pos[1] >= 3521) {
+		if (m->pos[1] >= 3521 && m->pos[1] < 8192) {
 			if (m->pos[1] <= 3841) {
 				printf("-------------------\nIDEAL SOLN\nBully spd: %f\nHau: %d\nPlatform normals: (%.9f, %.9f, %.9f)\nMario pos: (%.9f, %.9f, %.9f)\nMario start: (%.9f, %.9f, %.9f)\n",
 					m->speed, hau, normals[0], normals[1], normals[2], m->pos[0], m->pos[1], m->pos[2], m_pos[0], m_pos[1], m_pos[2]);
 			}
-			else if (m->pos[1] < 8192) {
+			else {
 				printf("-------------------\nACCEPTABLE SOLN\nBully spd: %f\nHau: %d\nPlatform normals: (%.9f, %.9f, %.9f)\nMario pos: (%.9f, %.9f, %.9f)\nMario start: (%.9f, %.9f, %.9f)\n",
 					m->speed, hau, normals[0], normals[1], normals[2], m->pos[0], m->pos[1], m->pos[2], m_pos[0], m_pos[1], m_pos[2]);
 			}
@@ -88,7 +88,7 @@ void brute_angles(Mario* m, Platform* plat, const Vec3f& m_pos, float spd, const
 }
 
 void brute_position(Mario* m, Platform* plat, float spd, const Vec3f& normals) {
-	for (int i = 0; i < 4; i++) { plat->normal[i] = normals[i]; }
+	for (int i = 0; i < 3; i++) { plat->normal[i] = normals[i]; }
 
 	plat->create_transform_from_normals();
 	plat->triangles[0].rotate(plat->pos, plat->transform);
@@ -156,7 +156,7 @@ void brute_position(Mario* m, Platform* plat, float spd, const Vec3f& normals) {
 			if (y <= -3071) { continue; }
 
 			brute_angles(m, plat, { x, y, z }, spd, normals, trans);
-			fprintf(stderr, "finished all angles for position %.9f, %.9f, %.9f\n", x, y, z);
+			//fprintf(stderr, "finished all angles for position %.9f, %.9f, %.9f\n", x, y, z);
 
 			//plat->transform = trans;
 
@@ -214,7 +214,7 @@ void brute_position(Mario* m, Platform* plat, float spd, const Vec3f& normals) {
 			if (y <= -3071) { continue; }
 
 			brute_angles(m, plat, { x, y, z }, spd, normals, trans);
-			fprintf(stderr, "finished all angles for position %.9f, %.9f, %.9f\n", x, y, z);
+			//fprintf(stderr, "finished all angles for position %.9f, %.9f, %.9f\n", x, y, z);
 
 			//plat->transform = trans;
 			for (int i = 0; i < 2; i++) { plat->triangles[i] = tri[i]; }
@@ -228,7 +228,7 @@ void brute_normals(float spd, Mario* m, Platform* p) {
 	for (float nx = -1.0f; nx <= 1.0f; nx = nextafterf(nx, 2.0f)) {
 		float limit = powf(nx, 2) - 1.0f;
 
-		for (float nz = limit; nz <= abs(limit); nz = nextafterf(nz, abs(limit) + 1)) {
+		for (float nz = limit; nz <= limit * -1; nz = nextafterf(nz, limit * -1 + 1)) {
 			float ny = sqrtf(1 - powf(nx, 2) - powf(nz, 2));
 
 			brute_position(m, p, spd, { nx, ny, nz });
