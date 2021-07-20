@@ -1,6 +1,15 @@
 CXX = clang++
 CXXFLAGS  = -g -Wall -O3 -fopenmp=libomp
 LDFLAGS = -lm 
+
+ifdef OS
+   RM = del /Q
+else
+   ifeq ($(shell uname), Linux)
+      RM = rm
+   endif
+endif
+
 .PHONY : clean
 
 default: main
@@ -29,7 +38,7 @@ main.o: main.cpp Mario.h Magic.h Platform.h
 main: Magic.o Mario.o Platform.o Surface.o Trig.o vmath.o main.o
 	$(CXX) $(CXXFLAGS) -o main Magic.o Mario.o Platform.o Surface.o Trig.o vmath.o main.o  $(LDFLAGS)
 clean:
-	del *.o main
+	$(RM) *.o main
 
 
 
