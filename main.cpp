@@ -230,50 +230,47 @@ void brute_position(Mario* m, Platform* plat, float spd, const Vec3f& normals) {
 	}
 }
 
-void brute_normals(float spd, Mario* m, Platform* p) {
+void brute_normals(float spd) {
 
-  float starting_normal =-1.0f;
-  float ending_normal = 1.0f;
-  float per_worker = (ending_normal - starting_normal) / omp_get_max_threads();
-  vector<float> normals(omp_get_max_threads() + 1);
-  for (int i = 0; i < omp_get_max_threads(); i++) {
-    normals[i] = starting_normal + i * per_worker;
-  }
-  normals[omp_get_max_threads()] = ending_normal;
+    float starting_normal =-1.0f;
+    float ending_normal = 1.0f;
+    float per_worker = (ending_normal - starting_normal) / omp_get_max_threads();
+    vector<float> normals(omp_get_max_threads() + 1);
+    for (int i = 0; i < omp_get_max_threads(); i++) {
+        normals[i] = starting_normal + i * per_worker;
+    }
+    normals[omp_get_max_threads()] = ending_normal;
 
-  OMP_FOR
-  for (int i = 0; i < omp_get_max_threads(); i++) {
-	for (float nx = normals[i]; nx <= normals[i+1]; nx = nextafterf(nx, 2.0f)) {
-		float limit = powf(nx, 2) - 1.0f;
+    OMP_FOR
+    for (int i = 0; i < omp_get_max_threads(); i++) {
+        Mario m;
+        Platform p;
+	    for (float nx = normals[i]; nx <= normals[i+1]; nx = nextafterf(nx, 2.0f)) {
+		    float limit = powf(nx, 2) - 1.0f;
 
-		for (float nz = limit; nz <= limit * -1; nz = nextafterf(nz, limit * -1 + 1)) {
+   		    for (float nz = limit; nz <= limit * -1; nz = nextafterf(nz, limit * -1 + 1)) {
 
-			float ny = sqrtf(1 - powf(nx, 2) - powf(nz, 2));
+			    float ny = sqrtf(1 - powf(nx, 2) - powf(nz, 2));
 
-			brute_position(m, p, spd, {nx, ny, nz});
+  			    brute_position(&m, &p, spd, {nx, ny, nz});
 
-			fprintf(stderr, "Finished all normals for %.9f, %.9f, %.9f\n", nx, ny,
-					nz);
+			    fprintf(stderr, "Finished all normals for %.9f, %.9f, %.9f\n", nx, ny,
+				      	nz);
 			}
 		}
 	}
 }
 
 void brute_speed() {
-  float spd = 58000000.0f;
-  float ending_spd = 1000000000.0;
+    float spd = 58000000.0f;
+    float ending_spd = 1000000000.0;
 
-  Mario mario;
-  Platform plat;
+    while (spd < ending_spd) {
+        brute_normals(spd);
 
-  while (spd < ending_spd) {
-    mario.speed = spd;
-
-    brute_normals(spd, &mario, &plat);
-
-    spd = nextafterf(spd, 2000000000.0f);
-    fprintf(stderr, "Finished all loops for speed %.9f\n", spd);
-  }
+        spd = nextafterf(spd, 2000000000.0f);
+        fprintf(stderr, "Finished all loops for speed %.9f\n", spd);
+    }
 }
 
 int main() {
