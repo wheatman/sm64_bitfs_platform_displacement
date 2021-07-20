@@ -43,5 +43,7 @@
 *.filters
 *.user
 
-# Ninja
+# Build files
 .ninja_log
+/build/**
+!/build/
