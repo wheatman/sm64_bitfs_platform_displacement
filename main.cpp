@@ -50,16 +50,16 @@ void brute_angles(Platform* plat, const Vec3f& m_pos, const float spd, const Vec
 			if (mario.pos[1] <= 3841) {
 				printf("-------------------\nIDEAL SOLN\nBully spd: %f\nHau: %d\nPlatform normals: (%.9f, %.9f, %.9f)\nMario pos: (%.9f, %.9f, %.9f)\nMario start: (%.9f, %.9f, %.9f)\n",
 					mario.speed, hau, normals[0], normals[1], normals[2], mario.pos[0], mario.pos[1], mario.pos[2], m_pos[0], m_pos[1], m_pos[2]);
-				printf("Triangle points\n");
-				plat->triangles[0].repr();
-				plat->triangles[1].repr();
+				//printf("Triangle points\n");
+				//plat->triangles[0].repr();
+				//plat->triangles[1].repr();
 			}
 			else {
 				printf("-------------------\nACCEPTABLE SOLN\nBully spd: %f\nHau: %d\nPlatform normals: (%.9f, %.9f, %.9f)\nMario pos: (%.9f, %.9f, %.9f)\nMario start: (%.9f, %.9f, %.9f)\n",
 					mario.speed, hau, normals[0], normals[1], normals[2], mario.pos[0], mario.pos[1], mario.pos[2], m_pos[0], m_pos[1], m_pos[2]);
-				printf("Triangle points\n");
-				plat->triangles[0].repr();
-				plat->triangles[1].repr();
+				//printf("Triangle points\n");
+				//plat->triangles[0].repr();
+				//plat->triangles[1].repr();
 			}
 			print_mutex.unlock();
 		}
