@@ -97,7 +97,6 @@ void brute_angles(Platform* plat, const Vec3f& m_pos, const float spd, const Vec
 }
 
 void brute_position(Platform* plat, float spd, const Vec3f& normals) {
-	const Vec2S& pre_tri = plat->triangles;
 	plat->normal[0] = 0;
 	plat->normal[1] = 1;
 	plat->normal[2] = 0;
@@ -237,7 +236,6 @@ void brute_position(Platform* plat, float spd, const Vec3f& normals) {
 			plat->normal = normals;
 		}
 	}
-	plat->triangles = pre_tri;
 }
 
 void brute_normals(float spd) {
@@ -255,6 +253,8 @@ void brute_normals(float spd) {
     for (int i = 0; i < omp_get_max_threads(); i++) {
         Platform p;
 
+        Vec2S tri = p.triangles;
+
 	    for (float nx = normals[i]; nx <= normals[i+1]; nx = nextafterf(nx, 2.0f)) {
 		    float limit = max(powf(nx, 2) - 1.0f, -0.5f);
 
@@ -265,6 +265,8 @@ void brute_normals(float spd) {
 
 			    fprintf(stderr, "Finished all positions for %.9f, %.9f, %.9f\n", nx, ny,
 				      	nz);
+
+			    p.triangles = tri;
 			}
 		}
 	}
