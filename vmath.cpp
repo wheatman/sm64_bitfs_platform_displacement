@@ -46,7 +46,7 @@ void vec3f_normalize(Vec3f& dest) {
  * 'yaw' is the angle which it should face
  * 'pos' is the object's position in the world
  */
-void mtxf_align_terrain_normal(Mat4& dest, Vec3f& upDir, const Vec3s& pos) {
+void mtxf_align_terrain_normal(Mat4& dest, Vec3f upDir, const Vec3s& pos) {
     Vec3f lateralDir;
     Vec3f leftDir;
     Vec3f forwardDir;

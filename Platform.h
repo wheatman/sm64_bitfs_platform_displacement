@@ -15,7 +15,7 @@ class Platform
 public:
 	Vec3s pos = { -1945, -3225, -715 };
 	Vec3f normal = { 0, 1, 0 };
-	Mat4 transform = { {0,0,0,0}, {0,0,0,0}, {0,0,0,0}, {0,0,0,0} };
+	Mat4 transform = { {} };
 	Vec2S triangles = { Surface(true), Surface(false) };
 
 	Platform() {
