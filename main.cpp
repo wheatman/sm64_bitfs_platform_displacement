@@ -97,6 +97,8 @@ void brute_angles(Mario* m, Platform* plat, const Vec3f& m_pos, float spd, const
 void brute_position(Mario* m, Platform* plat, float spd, const Vec3f& normals) {
 	for (int i = 0; i < 3; i++) { plat->normal[i] = normals[i]; }
 
+	const Vec2S& pre_tri = plat->triangles;
+
 	plat->create_transform_from_normals();
 	plat->triangles[0].rotate(plat->pos, plat->transform);
 	plat->triangles[1].rotate(plat->pos, plat->transform);
@@ -228,6 +230,8 @@ void brute_position(Mario* m, Platform* plat, float spd, const Vec3f& normals) {
 			for (int i = 0; i < 3; i++) { plat->normal[i] = normals[i]; }
 		}
 	}
+
+	for (int i = 0; i < 2; i++) { plat->triangles[i] = pre_tri[i]; }
 }
 
 void brute_normals(float spd) {
