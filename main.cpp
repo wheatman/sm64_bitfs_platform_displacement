@@ -1,7 +1,7 @@
-#include "Mario.h"
-#include "Magic.h"
-#include "Platform.h"
-#include "vmath.h"
+#include "Mario.hpp"
+#include "Magic.hpp"
+#include "Platform.hpp"
+#include "vmath.hpp"
 #include <cmath>
 #include <mutex>
 

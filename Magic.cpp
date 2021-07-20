@@ -1,5 +1,5 @@
-#include "Magic.h"
-#include "Mario.h"
+#include "Magic.hpp"
+#include "Mario.hpp"
 #include <cmath>
 
 pair<int16_t, float> calc_intended_yawmag(int8_t stickX, int8_t stickY) {

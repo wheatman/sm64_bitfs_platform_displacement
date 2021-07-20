@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Trig.h"
+#include "Trig.hpp"
 #include <vector>
 #include <array>
 

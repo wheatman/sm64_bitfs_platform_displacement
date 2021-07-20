@@ -1,4 +1,4 @@
-#include "Mario.h"
+#include "Mario.hpp"
 
 void Mario::set_pos(const Vec3f& position) {
     for (int i = 0; i < 4; i++) {

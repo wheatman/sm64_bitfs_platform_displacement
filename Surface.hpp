@@ -4,7 +4,7 @@
 #include <cstdio>
 #include <cstdint>
 
-#include "vmath.h"
+#include "vmath.hpp"
 
 using namespace std;
 
