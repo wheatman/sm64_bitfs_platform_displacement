@@ -37,8 +37,13 @@
 /Release/
 /.vs/
 
-# Virtual Studio
+# Visual Studio
 *.sln
 *.vcxproj
 *.filters
 *.user
+
+# Build files
+.ninja_log
+/build/**
+!/build/

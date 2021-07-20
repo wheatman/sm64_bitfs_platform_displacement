@@ -1,0 +1,60 @@
+# This build file only works on Windows.
+# I chose Ninja because it's a lot like GNU Make.
+# I should probably replace this one file with a cross-platform build.py that substitutes the correct names in.
+
+cxx = clang++
+cxx_flags = -g -Wall -O2 -fopenmp=libomp
+ld_flags = 
+
+build_dir = ./build
+
+# Rules and helpers
+
+rule compile
+  command = $cxx $cxx_flags -c $file -o $out
+  description = Compiling $out
+  
+rule link
+  command = $cxx $cxx_flags -o $out $in $ld_flags
+  description = Linking $out
+  
+rule run_shell
+  command = cmd /c "$shellcmd"
+  description = $desc
+  restat = yes
+
+build always: phony
+# Build targets  
+
+build $build_dir/Magic.o: compile Magic.h Magic.cpp
+  file = Magic.cpp
+
+build $build_dir/Mario.o: compile Mario.h Mario.cpp
+  file = Mario.cpp
+
+build $build_dir/Platform.o: compile Platform.h Platform.cpp
+  file = Platform.cpp
+
+build $build_dir/Surface.o: compile Surface.h Surface.cpp
+  file = Surface.cpp
+
+build $build_dir/Trig.o: compile Trig.h Trig.cpp
+  file = Trig.cpp
+
+build $build_dir/vmath.o: compile vmath.h vmath.cpp
+  file = vmath.cpp
+
+build $build_dir/main.o: compile main.cpp Mario.h Magic.h Platform.h
+  file = main.cpp
+  
+build $build_dir/main.exe: link $build_dir/Magic.o $build_dir/Mario.o $build_dir/Platform.o $build_dir/Surface.o $build_dir/Trig.o $build_dir/vmath.o $build_dir/main.o
+
+default $build_dir/main.exe
+
+build clean: run_shell always
+  shellcmd = del *.o main.exe
+  desc = Cleaning build files
+
+build run: run_shell always
+  shellcmd = "build/main.exe" > pu_displacement_outputs.txt
+  desc = Running executable

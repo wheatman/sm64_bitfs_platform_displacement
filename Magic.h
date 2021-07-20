@@ -4,6 +4,7 @@
 #include "vmath.h"
 #include <stdexcept>
 #include <utility>
+#include "vmath.h"
 
 using namespace std;
 
