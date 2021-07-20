@@ -53,7 +53,6 @@ void brute_angles(Platform* plat, const Vec3f& m_pos, const float spd, const Vec
 				printf("Triangle points\n");
 				plat->triangles[0].repr();
 				plat->triangles[1].repr();
-				printf("\n");
 			}
 			else {
 				printf("-------------------\nACCEPTABLE SOLN\nBully spd: %f\nHau: %d\nPlatform normals: (%.9f, %.9f, %.9f)\nMario pos: (%.9f, %.9f, %.9f)\nMario start: (%.9f, %.9f, %.9f)\n",
@@ -61,7 +60,6 @@ void brute_angles(Platform* plat, const Vec3f& m_pos, const float spd, const Vec
 				printf("Triangle points\n");
 				plat->triangles[0].repr();
 				plat->triangles[1].repr();
-				printf("\n");
 			}
 			print_mutex.unlock();
 		}
