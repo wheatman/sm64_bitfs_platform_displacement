@@ -48,6 +48,6 @@ public:
 	void repr();
 };
 
-typedef Surface Vec2S[2];
+typedef std::array<Surface, 2> Vec2S;
 
 #endif

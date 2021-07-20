@@ -25,7 +25,7 @@ static std::mutex print_mutex;
 
 using namespace std;
 
-void brute_angles(Mario* m, Platform* plat, const Vec3f& m_pos, float spd, const Vec3f & normals, const Mat4& trans) {
+void brute_angles(Mario* m, Platform* plat, const Vec3f& m_pos, const float spd, const Vec3f & normals, const Mat4& trans) {
 	//iterate over hau instead of sticks
 	for (int hau = 0; hau < 65535; hau += 16) {
 		if (abs((short)(int)(m_pos[0] + gSineTable[hau >> 4] * normals[1] * (spd / 4.0f))) >= 8192) {
@@ -93,7 +93,7 @@ void brute_angles(Mario* m, Platform* plat, const Vec3f& m_pos, float spd, const
 }
 
 void brute_position(Mario* m, Platform* plat, float spd, const Vec3f& normals) {
-	for (int i = 0; i < 3; i++) { plat->normal[i] = normals[i]; }
+	plat->normal = normals;
 
 	const Vec2S& pre_tri = plat->triangles;
 
@@ -166,9 +166,8 @@ void brute_position(Mario* m, Platform* plat, float spd, const Vec3f& normals) {
 			//fprintf(stderr, "finished all angles for position %.9f, %.9f, %.9f\n", x, y, z);
 
 			//plat->transform = trans;
-
-			for (int i = 0; i < 2; i++) { plat->triangles[i] = tri[i]; }
-			for (int i = 0; i < 3; i++) { plat->normal[i] = normals[i]; }
+			plat->triangles = tri;
+			plat->normal = normals;
 		}
 	}
 
@@ -176,12 +175,12 @@ void brute_position(Mario* m, Platform* plat, float spd, const Vec3f& normals) {
 	Vec3s min_vector;
 
 	if (min_x == plat->triangles[1].vector1[0]) {
-		for (int i = 0; i < 3; i++) { min_vector[i] = plat->triangles[1].vector1[i]; }
-		for (int i = 0; i < 3; i++) { max_vector[i] = plat->triangles[1].vector3[i]; }
+		min_vector = plat->triangles[1].vector1;
+		max_vector = plat->triangles[1].vector3;
 	}
 	else {
-		for (int i = 0; i < 3; i++) { min_vector[i] = plat->triangles[1].vector3[i]; }
-		for (int i = 0; i < 3; i++) { max_vector[i] = plat->triangles[1].vector1[i]; }
+		min_vector = plat->triangles[1].vector3;
+		max_vector = plat->triangles[1].vector1;
 	}
 
 	for (float x = min_x; x <= max_x; x += 20) {
@@ -224,12 +223,11 @@ void brute_position(Mario* m, Platform* plat, float spd, const Vec3f& normals) {
 			//fprintf(stderr, "finished all angles for position %.9f, %.9f, %.9f\n", x, y, z);
 
 			//plat->transform = trans;
-			for (int i = 0; i < 2; i++) { plat->triangles[i] = tri[i]; }
-			for (int i = 0; i < 3; i++) { plat->normal[i] = normals[i]; }
+			plat->triangles = tri;
+			plat->normal = normals;
 		}
 	}
-
-	for (int i = 0; i < 2; i++) { plat->triangles[i] = pre_tri[i]; }
+	plat->triangles = pre_tri;
 }
 
 void brute_normals(float spd) {
