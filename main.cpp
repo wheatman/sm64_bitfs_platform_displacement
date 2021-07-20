@@ -52,10 +52,18 @@ void brute_angles(Mario* m, Platform* plat, const Vec3f& m_pos, float spd, const
 			if (m->pos[1] <= 3841) {
 				printf("-------------------\nIDEAL SOLN\nBully spd: %f\nHau: %d\nPlatform normals: (%.9f, %.9f, %.9f)\nMario pos: (%.9f, %.9f, %.9f)\nMario start: (%.9f, %.9f, %.9f)\n",
 					m->speed, hau, normals[0], normals[1], normals[2], m->pos[0], m->pos[1], m->pos[2], m_pos[0], m_pos[1], m_pos[2]);
+				printf("Triangle points\n");
+				plat->triangles[0].repr();
+				plat->triangles[1].repr();
+				printf("\n");
 			}
 			else {
 				printf("-------------------\nACCEPTABLE SOLN\nBully spd: %f\nHau: %d\nPlatform normals: (%.9f, %.9f, %.9f)\nMario pos: (%.9f, %.9f, %.9f)\nMario start: (%.9f, %.9f, %.9f)\n",
 					m->speed, hau, normals[0], normals[1], normals[2], m->pos[0], m->pos[1], m->pos[2], m_pos[0], m_pos[1], m_pos[2]);
+				printf("Triangle points\n");
+				plat->triangles[0].repr();
+				plat->triangles[1].repr();
+				printf("\n");
 			}
 			print_mutex.unlock();
 		}
