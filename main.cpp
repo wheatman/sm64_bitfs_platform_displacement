@@ -107,7 +107,7 @@ void brute_position(Mario* m, Platform* plat, float spd, const Vec3f& normals) {
 	float max_x = max(plat->triangles[1].vector1[0], plat->triangles[1].vector3[0]);
 	float min_x = min(plat->triangles[1].vector1[0], plat->triangles[1].vector3[0]);
 
-	for (float x = plat->triangles[1].vector2[0]; x <= min_x; x++) {
+	for (float x = plat->triangles[1].vector2[0]; x <= min_x; x += 20) {
 		float y1 = line_point(plat->triangles[1].vector2, plat->triangles[1].vector1, x, true);
 		float z1 = line_point(plat->triangles[1].vector2, plat->triangles[1].vector1, x, false);
 
@@ -140,7 +140,7 @@ void brute_position(Mario* m, Platform* plat, float spd, const Vec3f& normals) {
 		if (check_min <= temp2) { min_z = check_min; }
 		if (check_max >= temp1) { max_z = check_max; }*/
 
-		for (float z = min_z; z <= max_z; z++) {
+		for (float z = min_z; z <= max_z; z += 20) {
 			float y;
 
 			if (min_z == z1) {
@@ -184,7 +184,7 @@ void brute_position(Mario* m, Platform* plat, float spd, const Vec3f& normals) {
 		for (int i = 0; i < 3; i++) { max_vector[i] = plat->triangles[1].vector1[i]; }
 	}
 
-	for (float x = min_x; x <= max_x; x = x+1) {
+	for (float x = min_x; x <= max_x; x += 20) {
 		float y1 = line_point(plat->triangles[1].vector2, max_vector, x, true);
 		float z1 = line_point(plat->triangles[1].vector2, max_vector, x, false);
 
@@ -198,7 +198,7 @@ void brute_position(Mario* m, Platform* plat, float spd, const Vec3f& normals) {
 			if (y1 <= -3071) { continue; }
 		}
 
-		for (float z = min_z; z <= max_z; z++) {
+		for (float z = min_z; z <= max_z; z += 20) {
 			float y;
 
 			if (min_z == z1) {
@@ -249,7 +249,7 @@ void brute_normals(float spd) {
         Platform p;
 
 	    for (float nx = normals[i]; nx <= normals[i+1]; nx = nextafterf(nx, 2.0f)) {
-		    float limit = powf(nx, 2) - 1.0f;
+		    float limit = max(powf(nx, 2) - 1.0f, -0.5f);
 
    		    for (float nz = nextafterf(limit, 1.0f); nz < limit * -1; nz = nextafterf(nz, 1.0f)) {
 			    float ny = sqrtf(1 - powf(nx, 2) - powf(nz, 2));
