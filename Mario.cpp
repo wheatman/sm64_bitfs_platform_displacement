@@ -1,9 +1,7 @@
 #include "Mario.hpp"
 
 void Mario::set_pos(const Vec3f& position) {
-    for (int i = 0; i < 4; i++) {
-        this->pos[i] = position[i];
-    }
+    this->pos = position;
 }
 
 int Mario::ground_step(int yaw, float normalY) {
