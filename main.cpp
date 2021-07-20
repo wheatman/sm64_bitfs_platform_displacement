@@ -36,16 +36,14 @@ void brute_angles(Mario* m, Platform* plat, const Vec3f& m_pos, float spd, const
 
 
 		if (m->ground_step(hau, normals[1]) == 0) { continue; }
-		
-		for (int i = 0; i < 3; i++) { plat->normal[i] = normals[i]; }
+
+		plat->normal = normals;
+	
 
 		if (!plat->find_floor(m)) { continue; }
 
 		plat->platform_logic(m);
-
-		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 4; j++) { plat->transform[i][j] = trans[i][j]; }
-		}
+		plat->transform = trans;
 
 		if (!check_inbounds(*m)) { continue; }
 
