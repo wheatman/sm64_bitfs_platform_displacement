@@ -9,40 +9,34 @@
  * | 0 0 0 1 |
  * i.e. a matrix representing a linear transformation over 3 space.
  */
-void *linear_mtxf_mul_vec3f(Vec3f dst, Mat4 m, Vec3f v) {
+void linear_mtxf_mul_vec3f(Vec3f& dst, const Mat4& m, const Vec3f& v) {
     for (int i = 0; i < 3; i++) {
         dst[i] = m[0][i] * v[0] + m[1][i] * v[1] + m[2][i] * v[2];
     }
-
-    return &dst;
 }
 
 /// Set vector 'dest' to (x, y, z)
-void *vec3f_set(Vec3f dst, float x, float y, float z) {
+void vec3f_set(Vec3f& dst, float x, float y, float z) {
     dst[0] = x;
     dst[1] = y;
     dst[2] = z;
-
-    return &dst;
 }
 
 /// Make vector 'dest' the cross product of vectors a and b.
-void* vec3f_cross(Vec3f dest, Vec3f a, Vec3f b) {
+void vec3f_cross(Vec3f& dest, const Vec3f& a, const Vec3f& b) {
     dest[0] = a[1] * b[2] - b[1] * a[2];
     dest[1] = a[2] * b[0] - b[2] * a[0];
     dest[2] = a[0] * b[1] - b[0] * a[1];
-    return &dest; //! warning: function returns address of local variable
 }
 
 /// Scale vector 'dest' so it has length 1
-void* vec3f_normalize(Vec3f dest) {
+void vec3f_normalize(Vec3f& dest) {
     //! Possible division by zero
     float invsqrt = 1.0f / sqrtf(dest[0] * dest[0] + dest[1] * dest[1] + dest[2] * dest[2]);
 
     dest[0] *= invsqrt;
     dest[1] *= invsqrt;
     dest[2] *= invsqrt;
-    return &dest; //! warning: function returns address of local variable
 }
 
 /**
@@ -52,7 +46,7 @@ void* vec3f_normalize(Vec3f dest) {
  * 'yaw' is the angle which it should face
  * 'pos' is the object's position in the world
  */
-void mtxf_align_terrain_normal(Mat4 dest, Vec3f upDir, Vec3s pos) {
+void mtxf_align_terrain_normal(Mat4& dest, Vec3f& upDir, const Vec3s& pos) {
     Vec3f lateralDir;
     Vec3f leftDir;
     Vec3f forwardDir;
