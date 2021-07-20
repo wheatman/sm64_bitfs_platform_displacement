@@ -234,8 +234,8 @@ void brute_position(Mario* m, Platform* plat, float spd, const Vec3f& normals) {
 
 void brute_normals(float spd) {
 
-    float starting_normal =-1.0f;
-    float ending_normal = 1.0f;
+    float starting_normal = -0.5f;
+    float ending_normal = 0.5f;
     float per_worker = (ending_normal - starting_normal) / omp_get_max_threads();
     vector<float> normals(omp_get_max_threads() + 1);
     for (int i = 0; i < omp_get_max_threads(); i++) {
@@ -251,7 +251,7 @@ void brute_normals(float spd) {
 	    for (float nx = normals[i]; nx <= normals[i+1]; nx = nextafterf(nx, 2.0f)) {
 		    float limit = powf(nx, 2) - 1.0f;
 
-   		    for (float nz = limit; nz <= limit * -1; nz = nextafterf(nz, limit * -1 + 1)) {
+   		    for (float nz = nextafterf(limit, 1.0f); nz < limit * -1; nz = nextafterf(nz, 1.0f)) {
 			    float ny = sqrtf(1 - powf(nx, 2) - powf(nz, 2));
 
   			    brute_position(&m, &p, spd, {nx, ny, nz});
