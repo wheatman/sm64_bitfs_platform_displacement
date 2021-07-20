@@ -243,18 +243,22 @@ void brute_normals(float spd, Mario* m, Platform* p) {
 
   OMP_FOR
   for (int i = 0; i < omp_get_max_threads(); i++) {
-	for (float nx = normals[i]; nx <= normals[i+1]; nx = nextafterf(nx, 2.0f)) {
-		float limit = powf(nx, 2) - 1.0f;
+    Mario mario = *m;
+    Platform plat = *p;
+    for (float nx = normals[i]; nx <= normals[i + 1];
+         nx = nextafterf(nx, 2.0f)) {
+      float limit = powf(nx, 2) - 1.0f;
 
-		for (float nz = limit; nz <= limit * -1; nz = nextafterf(nz, limit * -1 + 1)) {
+      for (float nz = limit; nz <= limit * -1;
+           nz = nextafterf(nz, limit * -1 + 1)) {
 
-			float ny = sqrtf(1 - powf(nx, 2) - powf(nz, 2));
+        float ny = sqrtf(1 - powf(nx, 2) - powf(nz, 2));
 
-			brute_position(m, p, spd, {nx, ny, nz});
+        brute_position(&mario, &plat, spd, {nx, ny, nz});
 
-			fprintf(stderr, "Finished all normals for %.9f, %.9f, %.9f\n", nx, ny,
-					nz);
-			}
+        fprintf(stderr, "Finished all normals for %.9f, %.9f, %.9f\n", nx, ny,
+                nz);
+      }
 		}
 	}
 }
