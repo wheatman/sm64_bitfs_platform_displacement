@@ -31,7 +31,7 @@ float approach_by_increment(float goal, float src, float inc) {
  * and the object's position.
  */
 void Platform::create_transform_from_normals() {
-	mtxf_align_terrain_normal(transform, normal, pos);
+	mtxf_align_terrain_normal(transform, normal, pos, 0);
 }
 
 Surface const * Platform::find_floor(Mario* m) const {
