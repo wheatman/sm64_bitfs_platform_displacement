@@ -10,9 +10,9 @@ void Surface::rotate(const Vec3s& pivot, const Mat4& transformation) {
 	Vec3f rotated3;
 
 	for (int i = 0; i < 3; i++) {
-		v1[i] = vector1[i] - pivot[i];
-		v2[i] = vector2[i] - pivot[i];
-		v3[i] = vector3[i] - pivot[i];
+		v1[i] = vector1[i];
+		v2[i] = vector2[i];
+		v3[i] = vector3[i];
 	}
 
 	for (int i = 0; i < 3; i++) {
@@ -34,9 +34,9 @@ void Surface::rotate(const Vec3s& pivot, const Mat4& transformation) {
 	}
 
 	for (int i = 0; i < 3; i++) {
-		vector1[i] = static_cast<int16_t>(static_cast<int>(rotated1[i])) + pivot[i];
-		vector2[i] = static_cast<int16_t>(static_cast<int>(rotated2[i])) + pivot[i];
-		vector3[i] = static_cast<int16_t>(static_cast<int>(rotated3[i])) + pivot[i];
+		vector1[i] = static_cast<int16_t>(static_cast<int>(rotated1[i]));
+		vector2[i] = static_cast<int16_t>(static_cast<int>(rotated2[i]));
+		vector3[i] = static_cast<int16_t>(static_cast<int>(rotated3[i]));
 	}
 }
 
