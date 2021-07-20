@@ -32,6 +32,9 @@ build $build_dir/Magic.o: compile Magic.h Magic.cpp
 build $build_dir/Mario.o: compile Mario.h Mario.cpp
   file = Mario.cpp
 
+build $build_dir/Platform.o: compile Platform.h Platform.cpp
+  file = Platform.cpp
+
 build $build_dir/Surface.o: compile Surface.h Surface.cpp
   file = Surface.cpp
 
@@ -44,7 +47,7 @@ build $build_dir/vmath.o: compile vmath.h vmath.cpp
 build $build_dir/main.o: compile main.cpp Mario.h Magic.h Platform.h
   file = main.cpp
   
-build $build_dir/main.exe: link $build_dir/Magic.o $build_dir/Mario.o $build_dir/Surface.o $build_dir/Trig.o $build_dir/vmath.o $build_dir/main.o
+build $build_dir/main.exe: link $build_dir/Magic.o $build_dir/Mario.o $build_dir/Platform.o $build_dir/Surface.o $build_dir/Trig.o $build_dir/vmath.o $build_dir/main.o
 
 default $build_dir/main.exe
 
