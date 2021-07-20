@@ -3,6 +3,7 @@
 #include "Platform.h"
 #include "vmath.h"
 #include <cmath>
+#include <mutex>
 
 #ifdef _OPENMP
 #include <omp.h> // This line won't add the library if you don't compile with -fopenmp option.
@@ -12,11 +13,15 @@
 #else // assuming "__GNUC__" is defined
 // For GCC compiler
 #define OMP_FOR _Pragma("omp parallel for")
+
 #endif
 #else
 #define omp_get_max_threads() 1
 #define OMP_FOR
+
 #endif
+
+static std::mutex print_mutex;
 
 using namespace std;
 
@@ -32,27 +37,29 @@ void brute_angles(Mario* m, Platform* plat, const Vec3f& m_pos, float spd, const
 
 		if (m->ground_step(hau, normals[1]) == 0) { continue; }
 		
-		for (int i = 0; i < 4; i++) { plat->normal[i] = normals[i]; }
+		for (int i = 0; i < 3; i++) { plat->normal[i] = normals[i]; }
 
 		if (!plat->find_floor(m)) { continue; }
 
 		plat->platform_logic(m);
 
-		for (int i = 0; i < 5; i++) {
-			for (int j = 0; j < 5; j++) { plat->transform[i][j] = trans[i][j]; }
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 4; j++) { plat->transform[i][j] = trans[i][j]; }
 		}
 
 		if (!check_inbounds(*m)) { continue; }
 
-		if (m->pos[1] >= 3521) {
+		if (m->pos[1] >= 3521 && m->pos[1] < 8192) {
+			print_mutex.lock();
 			if (m->pos[1] <= 3841) {
 				printf("-------------------\nIDEAL SOLN\nBully spd: %f\nHau: %d\nPlatform normals: (%.9f, %.9f, %.9f)\nMario pos: (%.9f, %.9f, %.9f)\nMario start: (%.9f, %.9f, %.9f)\n",
 					m->speed, hau, normals[0], normals[1], normals[2], m->pos[0], m->pos[1], m->pos[2], m_pos[0], m_pos[1], m_pos[2]);
 			}
-			else if (m->pos[1] < 8192) {
+			else {
 				printf("-------------------\nACCEPTABLE SOLN\nBully spd: %f\nHau: %d\nPlatform normals: (%.9f, %.9f, %.9f)\nMario pos: (%.9f, %.9f, %.9f)\nMario start: (%.9f, %.9f, %.9f)\n",
 					m->speed, hau, normals[0], normals[1], normals[2], m->pos[0], m->pos[1], m->pos[2], m_pos[0], m_pos[1], m_pos[2]);
 			}
+			print_mutex.unlock();
 		}
 	}
 
@@ -88,7 +95,7 @@ void brute_angles(Mario* m, Platform* plat, const Vec3f& m_pos, float spd, const
 }
 
 void brute_position(Mario* m, Platform* plat, float spd, const Vec3f& normals) {
-	for (int i = 0; i < 4; i++) { plat->normal[i] = normals[i]; }
+	for (int i = 0; i < 3; i++) { plat->normal[i] = normals[i]; }
 
 	plat->create_transform_from_normals();
 	plat->triangles[0].rotate(plat->pos, plat->transform);
@@ -156,7 +163,7 @@ void brute_position(Mario* m, Platform* plat, float spd, const Vec3f& normals) {
 			if (y <= -3071) { continue; }
 
 			brute_angles(m, plat, { x, y, z }, spd, normals, trans);
-			fprintf(stderr, "finished all angles for position %.9f, %.9f, %.9f\n", x, y, z);
+			//fprintf(stderr, "finished all angles for position %.9f, %.9f, %.9f\n", x, y, z);
 
 			//plat->transform = trans;
 
@@ -214,7 +221,7 @@ void brute_position(Mario* m, Platform* plat, float spd, const Vec3f& normals) {
 			if (y <= -3071) { continue; }
 
 			brute_angles(m, plat, { x, y, z }, spd, normals, trans);
-			fprintf(stderr, "finished all angles for position %.9f, %.9f, %.9f\n", x, y, z);
+			//fprintf(stderr, "finished all angles for position %.9f, %.9f, %.9f\n", x, y, z);
 
 			//plat->transform = trans;
 			for (int i = 0; i < 2; i++) { plat->triangles[i] = tri[i]; }
@@ -225,44 +232,47 @@ void brute_position(Mario* m, Platform* plat, float spd, const Vec3f& normals) {
 
 void brute_normals(float spd, Mario* m, Platform* p) {
 
-	for (float nx = -1.0f; nx <= 1.0f; nx = nextafterf(nx, 2.0f)) {
+  float starting_normal =-1.0f;
+  float ending_normal = 1.0f;
+  float per_worker = (ending_normal - starting_normal) / omp_get_max_threads();
+  vector<float> normals(omp_get_max_threads() + 1);
+  for (int i = 0; i < omp_get_max_threads(); i++) {
+    normals[i] = starting_normal + i * per_worker;
+  }
+  normals[omp_get_max_threads()] = ending_normal;
+
+  OMP_FOR
+  for (int i = 0; i < omp_get_max_threads(); i++) {
+	for (float nx = normals[i]; nx <= normals[i+1]; nx = nextafterf(nx, 2.0f)) {
 		float limit = powf(nx, 2) - 1.0f;
 
-		for (float nz = limit; nz <= abs(limit); nz = nextafterf(nz, abs(limit) + 1)) {
+		for (float nz = limit; nz <= limit * -1; nz = nextafterf(nz, limit * -1 + 1)) {
+
 			float ny = sqrtf(1 - powf(nx, 2) - powf(nz, 2));
 
-			brute_position(m, p, spd, { nx, ny, nz });
+			brute_position(m, p, spd, {nx, ny, nz});
 
-			fprintf(stderr, "Finished all normals for %.9f, %.9f, %.9f\n", nx, ny, nz);
+			fprintf(stderr, "Finished all normals for %.9f, %.9f, %.9f\n", nx, ny,
+					nz);
+			}
 		}
 	}
 }
 
 void brute_speed() {
-  float starting_spd = 58000000.0f;
+  float spd = 58000000.0f;
   float ending_spd = 1000000000.0;
-  float per_worker = (ending_spd - starting_spd) / omp_get_max_threads();
-  vector<float> speeds(omp_get_max_threads() + 1);
-  for (int i = 0; i < omp_get_max_threads(); i++) {
-    speeds[i] = starting_spd + i * per_worker;
-  }
-  speeds[omp_get_max_threads()] = ending_spd;
-  OMP_FOR
-  for (int i = 0; i < omp_get_max_threads(); i++) {
-    float spd = speeds[i];
-    float local_end_spd = speeds[i + 1];
 
-    Mario mario;
-    Platform plat;
+  Mario mario;
+  Platform plat;
 
-    while (spd < local_end_spd) {
-      mario.speed = spd;
+  while (spd < ending_spd) {
+    mario.speed = spd;
 
-      brute_normals(spd, &mario, &plat);
+    brute_normals(spd, &mario, &plat);
 
-      spd = nextafterf(spd, 2000000000.0f);
-	  fprintf(stderr, "Finished all loops for speed %.9f\n", spd);
-    }
+    spd = nextafterf(spd, 2000000000.0f);
+    fprintf(stderr, "Finished all loops for speed %.9f\n", spd);
   }
 }
 
