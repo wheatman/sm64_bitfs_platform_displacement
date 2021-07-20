@@ -12,7 +12,7 @@ using namespace std;
 class Mario
 {
 public:
-	Vec3f pos;
+	Vec3f pos = { 0,0,0 };
 	float speed;
 
 	Mario() {}
