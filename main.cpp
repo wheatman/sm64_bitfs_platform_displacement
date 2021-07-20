@@ -25,33 +25,31 @@ static std::mutex print_mutex;
 
 using namespace std;
 
-void brute_angles(Mario* m, Platform* plat, const Vec3f& m_pos, const float spd, const Vec3f & normals, const Mat4& trans) {
+void brute_angles(Platform* plat, const Vec3f& m_pos, const float spd, const Vec3f & normals, const Mat4& trans) {
 	//iterate over hau instead of sticks
 	for (int hau = 0; hau < 65535; hau += 16) {
 		if (abs((short)(int)(m_pos[0] + gSineTable[hau >> 4] * normals[1] * (spd / 4.0f))) >= 8192) {
 			continue;
 		}
-		m->set_pos(m_pos);
-		m->speed = spd;
+		Mario mario(m_pos, spd);
 
-
-		if (m->ground_step(hau, normals[1]) == 0) { continue; }
+		if (mario.ground_step(hau, normals[1]) == 0) { continue; }
 
 		plat->normal = normals;
 	
 
-		if (!plat->find_floor(m)) { continue; }
+		if (!plat->find_floor(&mario)) { continue; }
 
-		plat->platform_logic(m);
+		plat->platform_logic(&mario);
 		plat->transform = trans;
 
-		if (!check_inbounds(*m)) { continue; }
+		if (!check_inbounds(mario)) { continue; }
 
-		if (m->pos[1] >= 3521 && m->pos[1] < 8192) {
+		if (mario.pos[1] >= 3521 && mario.pos[1] < 8192) {
 			print_mutex.lock();
-			if (m->pos[1] <= 3841) {
+			if (mario.pos[1] <= 3841) {
 				printf("-------------------\nIDEAL SOLN\nBully spd: %f\nHau: %d\nPlatform normals: (%.9f, %.9f, %.9f)\nMario pos: (%.9f, %.9f, %.9f)\nMario start: (%.9f, %.9f, %.9f)\n",
-					m->speed, hau, normals[0], normals[1], normals[2], m->pos[0], m->pos[1], m->pos[2], m_pos[0], m_pos[1], m_pos[2]);
+					mario.speed, hau, normals[0], normals[1], normals[2], mario.pos[0], mario.pos[1], mario.pos[2], m_pos[0], m_pos[1], m_pos[2]);
 				printf("Triangle points\n");
 				plat->triangles[0].repr();
 				plat->triangles[1].repr();
@@ -59,7 +57,7 @@ void brute_angles(Mario* m, Platform* plat, const Vec3f& m_pos, const float spd,
 			}
 			else {
 				printf("-------------------\nACCEPTABLE SOLN\nBully spd: %f\nHau: %d\nPlatform normals: (%.9f, %.9f, %.9f)\nMario pos: (%.9f, %.9f, %.9f)\nMario start: (%.9f, %.9f, %.9f)\n",
-					m->speed, hau, normals[0], normals[1], normals[2], m->pos[0], m->pos[1], m->pos[2], m_pos[0], m_pos[1], m_pos[2]);
+					mario.speed, hau, normals[0], normals[1], normals[2], mario.pos[0], mario.pos[1], mario.pos[2], m_pos[0], m_pos[1], m_pos[2]);
 				printf("Triangle points\n");
 				plat->triangles[0].repr();
 				plat->triangles[1].repr();
@@ -100,7 +98,7 @@ void brute_angles(Mario* m, Platform* plat, const Vec3f& m_pos, const float spd,
 	}*/
 }
 
-void brute_position(Mario* m, Platform* plat, float spd, const Vec3f& normals) {
+void brute_position(Platform* plat, float spd, const Vec3f& normals) {
 	plat->normal = normals;
 
 	const Vec2S& pre_tri = plat->triangles;
@@ -170,7 +168,7 @@ void brute_position(Mario* m, Platform* plat, float spd, const Vec3f& normals) {
 
 			if (y <= -3071) { continue; }
 
-			brute_angles(m, plat, { x, y, z }, spd, normals, trans);
+			brute_angles(plat, { x, y, z }, spd, normals, trans);
 			//fprintf(stderr, "finished all angles for position %.9f, %.9f, %.9f\n", x, y, z);
 
 			//plat->transform = trans;
@@ -227,7 +225,7 @@ void brute_position(Mario* m, Platform* plat, float spd, const Vec3f& normals) {
 
 			if (y <= -3071) { continue; }
 
-			brute_angles(m, plat, { x, y, z }, spd, normals, trans);
+			brute_angles(plat, { x, y, z }, spd, normals, trans);
 			//fprintf(stderr, "finished all angles for position %.9f, %.9f, %.9f\n", x, y, z);
 
 			//plat->transform = trans;
@@ -251,7 +249,6 @@ void brute_normals(float spd) {
 
     OMP_FOR
     for (int i = 0; i < omp_get_max_threads(); i++) {
-        Mario m;
         Platform p;
 
 	    for (float nx = normals[i]; nx <= normals[i+1]; nx = nextafterf(nx, 2.0f)) {
@@ -260,7 +257,7 @@ void brute_normals(float spd) {
    		    for (float nz = nextafterf(limit, 1.0f); nz < limit * -1; nz = nextafterf(nz, 1.0f)) {
 			    float ny = sqrtf(1 - powf(nx, 2) - powf(nz, 2));
 
-  			    brute_position(&m, &p, spd, {nx, ny, nz});
+  			    brute_position(&p, spd, {nx, ny, nz});
 
 			    fprintf(stderr, "Finished all positions for %.9f, %.9f, %.9f\n", nx, ny,
 				      	nz);
