@@ -256,7 +256,7 @@ void brute_normals(float spd) {
 
   			    brute_position(&m, &p, spd, {nx, ny, nz});
 
-			    fprintf(stderr, "Finished all normals for %.9f, %.9f, %.9f\n", nx, ny,
+			    fprintf(stderr, "Finished all positions for %.9f, %.9f, %.9f\n", nx, ny,
 				      	nz);
 			}
 		}
