@@ -46,12 +46,12 @@ void vec3f_normalize(Vec3f& dest) {
  * 'yaw' is the angle which it should face
  * 'pos' is the object's position in the world
  */
-void mtxf_align_terrain_normal(Mat4& dest, Vec3f upDir, const Vec3s& pos) {
+void mtxf_align_terrain_normal(Mat4& dest, Vec3f upDir, const Vec3s& pos, int16_t yaw) {
     Vec3f lateralDir;
     Vec3f leftDir;
     Vec3f forwardDir;
 
-    vec3f_set(lateralDir, 0, 0, 1);
+    vec3f_set(lateralDir, gSineTable[yaw], 0, gCosineTable[yaw]);
     vec3f_normalize(upDir);
 
     vec3f_cross(leftDir, upDir, lateralDir);
@@ -63,17 +63,17 @@ void mtxf_align_terrain_normal(Mat4& dest, Vec3f upDir, const Vec3s& pos) {
     dest[0][0] = leftDir[0];
     dest[0][1] = leftDir[1];
     dest[0][2] = leftDir[2];
-    dest[3][0] = (float)pos[0];
+    dest[3][0] = pos[0];
 
     dest[1][0] = upDir[0];
     dest[1][1] = upDir[1];
     dest[1][2] = upDir[2];
-    dest[3][1] = (float)pos[1];
+    dest[3][1] = pos[1];
 
     dest[2][0] = forwardDir[0];
     dest[2][1] = forwardDir[1];
     dest[2][2] = forwardDir[2];
-    dest[3][2] = (float)pos[2];
+    dest[3][2] = pos[2];
 
     dest[0][3] = 0.0f;
     dest[1][3] = 0.0f;

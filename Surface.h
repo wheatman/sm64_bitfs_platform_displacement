@@ -44,7 +44,7 @@ public:
 		this->top = top;
 	}
 
-	void rotate(const Vec3s& pivot, const Mat4& transformation);
+	void rotate(const Vec3s& pivot, const Mat4& old_mat, const Mat4& new_mat);
 	void repr();
 };
 

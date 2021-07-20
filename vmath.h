@@ -21,7 +21,7 @@ typedef std::array<std::array<float, 4>, 4> Mat4;
 void vec3f_normalize(Vec3f &v);
 void vec3f_cross(Vec3f &dst, const Vec3f &a, const Vec3f &b);
 void vec3f_set(Vec3f &dst, float x, float y, float z);
-void mtxf_align_terrain_normal(Mat4 &dest, Vec3f upDir, const Vec3s &pos);
+void mtxf_align_terrain_normal(Mat4 &dest, Vec3f upDir, const Vec3s &pos, int16_t yaw);
 void linear_mtxf_mul_vec3f(Vec3f &dst, const Mat4 &m, const Vec3f &v);
 
 #endif

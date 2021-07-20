@@ -97,13 +97,20 @@ void brute_angles(Platform* plat, const Vec3f& m_pos, const float spd, const Vec
 }
 
 void brute_position(Platform* plat, float spd, const Vec3f& normals) {
+	plat->normal[0] = 0;
+	plat->normal[1] = 1;
+	plat->normal[2] = 0;
+	plat->create_transform_from_normals();
+
+	Mat4 old_mat = plat->transform;
+
 	plat->normal = normals;
 
 	const Vec2S& pre_tri = plat->triangles;
 
 	plat->create_transform_from_normals();
-	plat->triangles[0].rotate(plat->pos, plat->transform);
-	plat->triangles[1].rotate(plat->pos, plat->transform);
+	plat->triangles[0].rotate(plat->pos, old_mat, plat->transform);
+	plat->triangles[1].rotate(plat->pos, old_mat, plat->transform);
 
 	const Mat4& trans = plat->transform;
 	const Vec2S& tri = plat->triangles;
