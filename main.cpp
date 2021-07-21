@@ -44,7 +44,7 @@ void brute_angles(Platform* plat, const Vec3f& m_pos, const float spd, const Vec
 		uint32_t mask = _mm256_movemask_epi8(cmp_vector);
 		// bool skip = false;
 		
-		if (mask == 0x33333333U) {
+		if ((mask & 0x33333333U) == 0x33333333U) {
 			continue;
 			// skip = true;
 		}
@@ -54,15 +54,28 @@ void brute_angles(Platform* plat, const Vec3f& m_pos, const float spd, const Vec
 			// bool skip1 = false;
 			if ((mask & 0x3) == 0x3) {
 				// skip1 = true;
+				mask >>= 4;
 				continue;
 			}
 			mask >>= 4;
 #else
+
 			if (abs((short)(int)(m_pos[0] + gSineTable[hau >> 4] * normals[1] * (spd / 4.0f))) >= 8192) {
+#ifdef __AVX2__
+				// there are many times they we don't skip when we could
+				// if (!skip) {
+				// 		printf("issue skiped, %d\n", abs((short)(int)(m_pos[0] + gSineTable[hau >> 4] * normals[1] * (spd / 4.0f))));
+				// }
+				// if (!skip1) {
+				// 		printf("issue skiped 1, %d\n", abs((short)(int)(m_pos[0] + gSineTable[hau >> 4] * normals[1] * (spd / 4.0f))));
+				// }
+#endif
 				continue;
 			}
 #endif
+
 #ifdef __AVX2__
+			// no times we skip when we shouldn't
 			// if (skip) {
 			// 		printf("issue didn't skip, %d\n", abs((short)(int)(m_pos[0] + gSineTable[hau >> 4] * normals[1] * (spd / 4.0f))));
 			// }
