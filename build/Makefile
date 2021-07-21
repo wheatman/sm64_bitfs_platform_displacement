@@ -1,6 +1,6 @@
 CXX = clang++
-CXXFLAGS  = -g -Wall -O3 -fopenmp=libomp -march=native
-LDFLAGS = -lm
+CXXFLAGS  = -g -Wall -O3 -fopenmp=libomp -march=native -flto
+LDFLAGS = -lm -flto
 
 .PHONY : clean
 
