@@ -4,6 +4,7 @@
 #include "vmath.h"
 #include <cmath>
 #include <mutex>
+#include <immintrin.h>
 
 #ifdef _OPENMP
 #include <omp.h> // This line won't add the library if you don't compile with -fopenmp option.
@@ -27,41 +28,80 @@ using namespace std;
 
 void brute_angles(Platform* plat, const Vec3f& m_pos, const float spd, const Vec3f & normals, const Mat4& trans) {
 	//iterate over hau instead of sticks
-	for (int hau = 0; hau < 65535; hau += 16) {
-		if (abs((short)(int)(m_pos[0] + gSineTable[hau >> 4] * normals[1] * (spd / 4.0f))) >= 8192) {
+#ifdef __AVX2__
+	const __m256  m_pos_vector = _mm256_set1_ps(m_pos[0]);
+	const __m256 normal_vector = _mm256_set1_ps(normals[1]);
+	const __m256 speed_vector = _mm256_set1_ps(spd / 4.0f);
+	const __m256 speed_x_normal = _mm256_mul_ps(normal_vector, speed_vector);
+#endif
+	for (int hau1 = 0; hau1 < 65535; hau1 += 128) {
+#ifdef __AVX2__
+		__m256 sin_vector = _mm256_loadu_ps(gSineTable.data() + (hau1 >> 4));
+		__m256 float_check = _mm256_fmadd_ps(speed_x_normal, sin_vector, m_pos_vector);
+		__m256i int_check = _mm256_cvttps_epi32(float_check);
+		__m256i abs_vector = _mm256_abs_epi32(int_check);
+		__m256i cmp_vector = _mm256_cmpgt_epi16(abs_vector, _mm256_set1_epi16(8192));
+		uint32_t mask = _mm256_movemask_epi8(cmp_vector);
+		// bool skip = false;
+		
+		if (mask == 0x33333333U) {
 			continue;
+			// skip = true;
 		}
-		Mario mario(m_pos, spd);
-
-		if (mario.ground_step(hau, normals[1]) == 0) { continue; }
-
-		plat->normal = normals;
-	
-
-		if (!plat->find_floor(&mario)) { continue; }
-
-		plat->platform_logic(&mario);
-		plat->transform = trans;
-
-		if (!check_inbounds(mario)) { continue; }
-
-		if (mario.pos[1] >= 3521 && mario.pos[1] < 8192) {
-			print_mutex.lock();
-			if (mario.pos[1] <= 3841) {
-				printf("-------------------\nIDEAL SOLN\nBully spd: %f\nHau: %d\nPlatform normals: (%.9f, %.9f, %.9f)\nMario pos: (%.9f, %.9f, %.9f)\nMario start: (%.9f, %.9f, %.9f)\n",
-					mario.speed, hau, normals[0], normals[1], normals[2], mario.pos[0], mario.pos[1], mario.pos[2], m_pos[0], m_pos[1], m_pos[2]);
-				//printf("Triangle points\n");
-				//plat->triangles[0].repr();
-				//plat->triangles[1].repr();
+#endif
+		for (int hau = hau1; hau < hau1+128; hau += 16) {
+#ifdef __AVX2__
+			// bool skip1 = false;
+			if ((mask & 0x3) == 0x3) {
+				// skip1 = true;
+				continue;
 			}
-			else {
-				printf("-------------------\nACCEPTABLE SOLN\nBully spd: %f\nHau: %d\nPlatform normals: (%.9f, %.9f, %.9f)\nMario pos: (%.9f, %.9f, %.9f)\nMario start: (%.9f, %.9f, %.9f)\n",
-					mario.speed, hau, normals[0], normals[1], normals[2], mario.pos[0], mario.pos[1], mario.pos[2], m_pos[0], m_pos[1], m_pos[2]);
-				//printf("Triangle points\n");
-				//plat->triangles[0].repr();
-				//plat->triangles[1].repr();
+			mask >>= 4;
+#else
+			if (abs((short)(int)(m_pos[0] + gSineTable[hau >> 4] * normals[1] * (spd / 4.0f))) >= 8192) {
+				continue;
 			}
-			print_mutex.unlock();
+#endif
+#ifdef __AVX2__
+			// if (skip) {
+			// 		printf("issue didn't skip, %d\n", abs((short)(int)(m_pos[0] + gSineTable[hau >> 4] * normals[1] * (spd / 4.0f))));
+			// }
+			// if (skip1) {
+			// 		printf("issue didn't skip 1, %d\n", abs((short)(int)(m_pos[0] + gSineTable[hau >> 4] * normals[1] * (spd / 4.0f))));
+			// }
+#endif
+			Mario mario(m_pos, spd);
+
+			if (mario.ground_step(hau, normals[1]) == 0) { continue; }
+
+			plat->normal = normals;
+		
+
+			if (!plat->find_floor(&mario)) { continue; }
+
+			plat->platform_logic(&mario);
+			plat->transform = trans;
+
+			if (!check_inbounds(mario)) { continue; }
+
+			if (mario.pos[1] >= 3521 && mario.pos[1] < 8192) {
+				print_mutex.lock();
+				if (mario.pos[1] <= 3841) {
+					printf("-------------------\nIDEAL SOLN\nBully spd: %f\nHau: %d\nPlatform normals: (%.9f, %.9f, %.9f)\nMario pos: (%.9f, %.9f, %.9f)\nMario start: (%.9f, %.9f, %.9f)\n",
+						mario.speed, hau, normals[0], normals[1], normals[2], mario.pos[0], mario.pos[1], mario.pos[2], m_pos[0], m_pos[1], m_pos[2]);
+					//printf("Triangle points\n");
+					//plat->triangles[0].repr();
+					//plat->triangles[1].repr();
+				}
+				else {
+					printf("-------------------\nACCEPTABLE SOLN\nBully spd: %f\nHau: %d\nPlatform normals: (%.9f, %.9f, %.9f)\nMario pos: (%.9f, %.9f, %.9f)\nMario start: (%.9f, %.9f, %.9f)\n",
+						mario.speed, hau, normals[0], normals[1], normals[2], mario.pos[0], mario.pos[1], mario.pos[2], m_pos[0], m_pos[1], m_pos[2]);
+					//printf("Triangle points\n");
+					//plat->triangles[0].repr();
+					//plat->triangles[1].repr();
+				}
+				print_mutex.unlock();
+			}
 		}
 	}
 
