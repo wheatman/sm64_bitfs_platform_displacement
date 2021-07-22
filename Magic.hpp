@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Trig.h"
-#include "vmath.h"
+#include "Trig.hpp"
+#include "vmath.hpp"
 #include <stdexcept>
 #include <utility>
-#include "vmath.h"
+#include "vmath.hpp"
 
 using namespace std;
 

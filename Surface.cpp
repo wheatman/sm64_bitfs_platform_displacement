@@ -1,4 +1,4 @@
-#include "Surface.h"
+#include "Surface.hpp"
 
 void Surface::rotate(const Vec3s& pivot, const Mat4& old_mat, const Mat4& new_mat) {
 	Vec3f dist1;

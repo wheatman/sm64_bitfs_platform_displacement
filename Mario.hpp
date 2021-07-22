@@ -1,8 +1,8 @@
 #pragma once
 
 #include <vector>
-#include "Magic.h"
-#include "vmath.h"
+#include "Magic.hpp"
+#include "vmath.hpp"
 
 using namespace std;
 

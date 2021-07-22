@@ -1,7 +1,7 @@
-#include "Mario.h"
-#include "Magic.h"
-#include "Platform.h"
-#include "vmath.h"
+#include "Mario.hpp"
+#include "Magic.hpp"
+#include "Platform.hpp"
+#include "vmath.hpp"
 #include <cmath>
 #include <mutex>
 
@@ -24,6 +24,14 @@
 static std::mutex print_mutex;
 
 using namespace std;
+
+/**
+ * Squares the input.
+ */
+template<typename T>
+[[ gnu::always_inline ]] T sqr(T in) {
+  return in * in;
+}
 
 void brute_angles(Platform* plat, const Vec3f& m_pos, const float spd, const Vec3f & normals, const Mat4& trans) {
 	//iterate over hau instead of sticks
@@ -256,10 +264,10 @@ void brute_normals(float spd) {
         Vec2S tri = p.triangles;
 
 	    for (float nx = normals[i]; nx <= normals[i+1]; nx = nextafterf(nx, 2.0f)) {
-		    float limit = max(powf(nx, 2) - 1.0f, -0.5f);
+		    float limit = max(sqr(nx) - 1.0f, -0.5f);
 
    		    for (float nz = nextafterf(limit, 1.0f); nz < limit * -1; nz = nextafterf(nz, 1.0f)) {
-			    float ny = sqrtf(1 - powf(nx, 2) - powf(nz, 2));
+			    float ny = sqrtf(1 - sqr(nx) - sqr(nz));
 
   			    brute_position(&p, spd, {nx, ny, nz});
 

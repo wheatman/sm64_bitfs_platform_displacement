@@ -1,9 +1,9 @@
 #pragma once
 
 #include <vector>
-#include "Mario.h"
-#include "Surface.h"
-#include "vmath.h"
+#include "Mario.hpp"
+#include "Surface.hpp"
+#include "vmath.hpp"
 
 using namespace std;
 
