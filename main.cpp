@@ -50,16 +50,16 @@ void brute_angles(Platform* plat, const Vec3f& m_pos, const float spd, const Vec
 			if (mario.pos[1] <= 3841) {
 				printf("-------------------\nIDEAL SOLN\nBully spd: %f\nHau: %d\nPlatform normals: (%.9f, %.9f, %.9f)\nMario pos: (%.9f, %.9f, %.9f)\nMario start: (%.9f, %.9f, %.9f)\n",
 					mario.speed, hau, normals[0], normals[1], normals[2], mario.pos[0], mario.pos[1], mario.pos[2], m_pos[0], m_pos[1], m_pos[2]);
-				printf("Triangle points\n");
-				plat->triangles[0].repr();
-				plat->triangles[1].repr();
+				//printf("Triangle points\n");
+				//plat->triangles[0].repr();
+				//plat->triangles[1].repr();
 			}
 			else {
 				printf("-------------------\nACCEPTABLE SOLN\nBully spd: %f\nHau: %d\nPlatform normals: (%.9f, %.9f, %.9f)\nMario pos: (%.9f, %.9f, %.9f)\nMario start: (%.9f, %.9f, %.9f)\n",
 					mario.speed, hau, normals[0], normals[1], normals[2], mario.pos[0], mario.pos[1], mario.pos[2], m_pos[0], m_pos[1], m_pos[2]);
-				printf("Triangle points\n");
-				plat->triangles[0].repr();
-				plat->triangles[1].repr();
+				//printf("Triangle points\n");
+				//plat->triangles[0].repr();
+				//plat->triangles[1].repr();
 			}
 			print_mutex.unlock();
 		}
@@ -105,8 +105,6 @@ void brute_position(Platform* plat, float spd, const Vec3f& normals) {
 	Mat4 old_mat = plat->transform;
 
 	plat->normal = normals;
-
-	const Vec2S& pre_tri = plat->triangles;
 
 	plat->create_transform_from_normals();
 	plat->triangles[0].rotate(plat->pos, old_mat, plat->transform);
@@ -238,7 +236,6 @@ void brute_position(Platform* plat, float spd, const Vec3f& normals) {
 			plat->normal = normals;
 		}
 	}
-	plat->triangles = pre_tri;
 }
 
 void brute_normals(float spd) {
@@ -256,6 +253,8 @@ void brute_normals(float spd) {
     for (int i = 0; i < omp_get_max_threads(); i++) {
         Platform p;
 
+        Vec2S tri = p.triangles;
+
 	    for (float nx = normals[i]; nx <= normals[i+1]; nx = nextafterf(nx, 2.0f)) {
 		    float limit = max(powf(nx, 2) - 1.0f, -0.5f);
 
@@ -266,6 +265,8 @@ void brute_normals(float spd) {
 
 			    fprintf(stderr, "Finished all positions for %.9f, %.9f, %.9f\n", nx, ny,
 				      	nz);
+
+			    p.triangles = tri;
 			}
 		}
 	}

@@ -58,7 +58,7 @@ bool check_inbounds(const Mario& m) {
 	short y_mod = (short)(int)m.pos[1];
 	short z_mod = (short)(int)m.pos[2];
 
-	return (abs(x_mod) < 8192 && abs(y_mod) < 8192 && abs(z_mod) < 8192);
+	return (abs(x_mod) < 8192 & abs(y_mod) < 8192 & abs(z_mod) < 8192);
 }
 
 float dist_calc(const Vec3f& x, const Vec3f& y) {
