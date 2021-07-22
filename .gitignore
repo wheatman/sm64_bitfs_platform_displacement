@@ -45,5 +45,8 @@
 
 # Build files
 .ninja_log
+.ninja_deps
+build.ninja
 /build/**
 !/build/
+__pycache__
